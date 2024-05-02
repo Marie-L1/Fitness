@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django import forms
 from django.db import models
+from django.utils import timezone
 
 class User(AbstractUser):
     pass
@@ -29,16 +30,13 @@ class Workout(models.Model):
 class Goal(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="goals")
     description = models.CharField(max_length=200)
+    created_at = models.DateTimeField(default=timezone.now)
+    completed_at = models.DateTimeField(null=True, blank=True)
     achieved = models.BooleanField(default=False)
 
     def __str__(self):
         return self.description
     
-
-class GoalForm(forms.ModelForm):
-    class Meta:
-        model = Goal
-        fields = ["description"]
 
 
 class WaterIntake(models.Model):
