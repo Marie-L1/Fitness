@@ -5,6 +5,7 @@ from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django import forms
+from django.contrib.auth.forms import UserCreationForm
 
 
 from .models import User, Workout, Goal, GoalForm
@@ -57,3 +58,31 @@ def logout_view(request):
     return HttpResponseRedirect(reverse("index"))
 
 
+def register(request):
+    if request.method == "POST":
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save()
+            user = form.save()
+            username = user.username
+            password = form.cleaned_data.get("password1")
+            user = authenticate(username=username, password=password)
+            login(request, user)
+            return HttpResponseRedirect(reverse("index"))
+        else:
+            form = UserCreationForm()
+        return render(request, "register.html", {"form": form})
+    
+
+@login_required
+def new_goal(request):
+    if request.method == "POST":
+        form = GoalForm(request.POST)
+        if form.is_valid():
+            goal = form.save(commit=False)
+            goal.user = request.user
+            goal.save()
+            return redirect("index")
+    else:
+        form = GoalForm()
+    return render(request, "new_goal.html", {"form":form})

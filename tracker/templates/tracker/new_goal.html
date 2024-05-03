@@ -1,0 +1,25 @@
+{% extends "tracker/layout.html" %}
+
+{% block body %}
+
+<h2>Add a Goal</h2>
+
+<form mthod="post">
+    {% csrf_token %}
+    {{ foam.as_p }}
+    <button type="submit">Add Goal</button>
+</form>
+
+<h2>Existing Goals</h2>
+<div>
+    <ul>
+        {% for goal in current_goals %}
+        <li>
+            <input type="checkbox" id="{{ goal.id }}" name="{{ goal.id }}">
+            <label for="{{ goal.id }}">{{ goal.description }}</label>
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}
