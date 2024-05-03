@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import IntegrityError
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -86,3 +86,11 @@ def new_goal(request):
     else:
         form = GoalForm()
     return render(request, "new_goal.html", {"form":form})
+
+def edit_goal(request, goal_id):
+    if request.method == "POST" and request.is_ajax():
+        goal = Goal.objects.get(pk=goal_id)
+        new_description = request.POST.get("description")
+        goal.save()
+        return JsonResponse({"description": new_description})
+    return JsonResponse({"error": "Invalid request"})

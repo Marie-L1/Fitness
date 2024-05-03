@@ -1,0 +1,18 @@
+{% extends "tracker/layout.html" %}
+
+{% block body %}
+
+<!--Put everything in a container-->
+
+
+<!--Current Goal checklist-->
+<div>
+    <h3>Current Goals</h3>
+    <ul>
+        {% for goal in current_goals %}
+            <li clas="editable" data-goal-id="{{ goal.id }}">{{ goal.description }}</li>
+        {% endfor %}
+    </ul>
+</div>
+
+{% endblock %}
