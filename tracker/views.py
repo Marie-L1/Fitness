@@ -8,13 +8,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 
 
-from .models import User, Workout, Goal, GoalForm
-
-# for logging a workoutclass WorkoutForm(forms.ModelForm):
-class WorkoutForm(forms.ModelForm):
-    class Meta:
-        model = Workout
-        fields = ["date", "exercise", "duration_minutes", "intensity", "notes"]
+from .models import User, Workout, Goal
+from .forms import WorkoutForm, GoalForm
 
 
 
@@ -94,3 +89,38 @@ def edit_goal(request, goal_id):
         goal.save()
         return JsonResponse({"description": new_description})
     return JsonResponse({"error": "Invalid request"})
+
+
+# calculate calories burned per minute of each activity type
+def calculated_calories_burned(activity_type, duration_minutes):
+    calories_per_minute = {
+        "run": 12,
+        "walk": 3,
+        "bike": 12,
+        "swim": 7,
+        "hike": 7,
+        "dance": 5
+    }
+    if activity_type in calories_per_minute:
+        calories_per_minute_for_activity = calories_per_minute[activity_type]
+        return duration_minutes * calories_per_minute_for_activity
+    else:
+        return None
+
+def log_workout(request):
+    if request.method == "POST":
+        form = WorkoutForm(request.POST)
+        if form.is_valid():
+            workout = form.save(commit=False)
+            workout.calories_burned = calculated_calories_burned(workout.activity_type, workout.duration_minutes)
+            workout.save()
+            return redirect("index")
+    else:
+        form = WorkoutForm()
+    return render(request, "tracker/log_workout.html", {"form": form})
+        
+
+
+def user_profile(request):
+    past_workouts = Workout.objects.filter(user=request.user).order_by("-date")
+    return render(request, "tracker/user_profile.html", {"past_workouts": past_workouts})
