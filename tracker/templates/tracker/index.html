@@ -18,7 +18,38 @@
 
 
 <script>
-    
+    document.addEventListener("DOMContentLoaded", () => {
+        const goals = document.querySelectorAll(".editable");
+        goals.forEach((goal) => {
+            goal.addEventListener("click", () => {
+                const text = goal.innerText;
+                const input = document.createElement("input");
+                input.value = text;
+                goal.innerText = "";
+                goal.appendChild(input);
+                input.focus();
+                input.addEventListener("blur", () => {
+                    const newText = input.value;
+                    const goalId = goal.getAttribute("data-goal-id");
+                    fetch(`/edit_goal/${goalId}`, {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "X-CSRFToken": "{{ csrf_token }}"
+                        },
+                        body: JSON.stringify({ description: newText })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        goal.innerText = data.description;
+                    })
+                    .catch(error => {
+                        console.error("Error:", error);
+                    });
+                });
+            });
+        });
+    });
 </script>
 
 {% endblock %}
