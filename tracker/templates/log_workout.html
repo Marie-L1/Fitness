@@ -1,0 +1,62 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Log Workout
+{% endblock %}
+
+{% block body %}
+    <h2>Log Workout</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="workout_form">
+            <label for="exercise">Exercise</label>
+            <input type="text" id="exercise" name="excerise" class="workout_form">
+        </div>
+        
+        <div class="workout_form">
+            <labe for="duration">Duration(minutes):</labe>
+            <input type="number" id="duration" name="duration" class="workout_form">
+        </div>
+
+        <div class="workout_form">
+            <label for="weight_amount">Weight Amount</label>
+            <input type="number" id="weight_amount" name="weight_amount" class="workout_form">
+        </div>
+        <div class="workout_form">
+            <label for="weights">Weight Type</label>
+            <select id="weights" name="weights" class="workout_form">
+                <option value="barbell">Barbell</option>
+                <option value="bodyweight">Body Weight</option>
+                <option value="dumbbells">Dumbbell</option>
+                <option value="kettlebells">Kettlebell</option>
+            </select>
+
+        </div>
+
+        <div class="workout_form">
+            <label form="activity">Areobic</label>
+            <select id="activity" name="activity" class="workout_form">
+                <option value="run">Run</option>
+                <option value="walk">Walk</option>
+                <option value="bike">Biking</option>
+                <option value="swim">Swimming</option>
+                <option value="hiking">Hiking</option>
+                <option value="dance">Dancing</option>
+            </select>
+        </div>
+
+        <div class="workout_form">
+            <label for="date">Date:</label>
+            <input type="date" id="date" name="date" class="workout_form">
+        </div>
+        <div class="workout_form">
+            <label for="distance">Distance(miles):</label>
+            <input type="number" id="distance" name="distance" class="workout_form">
+        </div>
+
+
+        <button type="submit">Submit Workout</button>
+    </form>
+
+{% endblock %}
