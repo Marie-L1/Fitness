@@ -30,7 +30,7 @@ def index(request):
         "workout_history": workout_history,
         "current_goals": current_goals
     }
-    return render(request, "index.html", context)
+    return render(request, "tracker/index.html", context)
 
 
 def login_view(request):
@@ -46,11 +46,11 @@ def login_view(request):
             login(request, user)
             return HttpResponseRedirect(reverse("index"))
         else:
-            return render(request, "login.html", {
+            return render(request, "tracker/login.html", {
                 "message": "Invalid username and/or password."
             })
     else:
-        return render(request, "login.html")
+        return render(request, "tracker/login.html")
 
 
 def logout_view(request):
@@ -71,7 +71,7 @@ def register(request):
             return HttpResponseRedirect(reverse("index"))
         else:
             form = UserCreationForm()
-        return render(request, "register.html", {"form": form})
+        return render(request, "tracker/register.html", {"form": form})
     
 
 @login_required
@@ -85,7 +85,7 @@ def new_goal(request):
             return redirect("index")
     else:
         form = GoalForm()
-    return render(request, "new_goal.html", {"form":form})
+    return render(request, "tracker/new_goal.html", {"form":form})
 
 def edit_goal(request, goal_id):
     if request.method == "POST" and request.is_ajax():
