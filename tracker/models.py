@@ -20,7 +20,25 @@ class Workout(models.Model):
     date = models.DateField()
     exercise = models.CharField(max_length=100)
     duration_minutes = models.IntegerField()
-    intensity = models.CharField(max_length=50)
+    weight_amount = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+    WEIGHT_CHOICES = [
+        ("barbell", "Barbell"),
+        ("body_weight", "Body Weight"),
+        ("kettlebells", "Kettlebells"),
+        ("dumbbells", "Dumbbells")
+    ]
+    weight_type = models.CharField(max_length=20, choices=WEIGHT_CHOICES, null=True, blank=True)
+    ACTIVITY_CHOICES = [
+        ("run", "Run"),
+        ("walk", "Walk"),
+        ("bike", "Bike"),
+        ("swim", "Swim"),
+        ("hike", "Hike"),
+        ("dance", "Dance")
+    ]
+    activity_type = models.CharField(max_length=20, choices=ACTIVITY_CHOICES, null=True)
+    distance_miles = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+    calories_burned = models.IntegerField(null=True, blank=True)
     notes = models.TextField(blank=True)
 
     def __str__(self):
