@@ -126,7 +126,6 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 
-AUTH_USER_MODEL = 'fitness.User'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'fitness', 'static'),
@@ -141,4 +140,3 @@ DEBUG_TOOLBAR_CONFIG = {
     'SHOW_TOOLBAR_CALLBACK': lambda request: True,
 }
 
-AUTH_USER_MODEL = 'fitness.User'
