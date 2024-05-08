@@ -36,6 +36,16 @@ class Workout(models.Model):
         ("hike", "Hike"),
         ("dance", "Dance")
     ]
+    WEIGHT_UNIT_CHOICES = [
+        ("kg", "Kilograms"),
+        ("lbs", "Pounds")
+    ]
+    weight_unit = models.CharField(max_length=3, choices=WEIGHT_UNIT_CHOICES, default="lbs")
+    DISTANCE_UNIT_CHOICES = [
+        ("km", "Kilometers"),
+        ("mi", "Miles"),
+    ]
+    distance_unit = models.CharField(max_length=2, choices=DISTANCE_UNIT_CHOICES, default="km", blank=True, null=True)
     activity_type = models.CharField(max_length=20, choices=ACTIVITY_CHOICES, null=True)
     distance_miles = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
     calories_burned = models.IntegerField(null=True, blank=True)
