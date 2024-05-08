@@ -118,7 +118,25 @@ def log_workout(request):
     else:
         form = WorkoutForm()
     return render(request, "tracker/log_workout.html", {"form": form})
-        
+
+
+def delete_workout(request, workout_id):
+    workout = get_object_or_404(Workout, pk=workout_id) 
+    if request.method == "POST":
+        workout.delete()
+        return redirect("index")
+    return redirect("user_profile")    
+
+def edit_workout(request, workout_id):
+    workout = get_object_or_404(Workout, pk=workout_id)
+    if request.method == "POST":
+        form = WorkoutForm(request.POST, instance=workout)
+        if form.is_valid():
+            form.save()
+            return redirect("user_profile")
+    else:
+        form = WorkoutForm(instance=workout)
+    return render(request, "tracker/edit_workout.html", {"form": form})
 
 
 def user_profile(request):
