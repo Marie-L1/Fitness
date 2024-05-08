@@ -36,3 +36,28 @@ class WorkoutForm(forms.ModelForm):
     class Meta:
         model = Workout
         fields = ["date", "exercise", "duration_minutes", "notes", "weight_amount", "weight_type", "activity_type", "disatnce_miles"]    
+        widgets = {
+            'date': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'exercise': forms.TextInput(attrs={'class': 'form-control'}),
+            'duration_minutes': forms.NumberInput(attrs={'class': 'form-control', 'min': '1'}),
+            'notes': forms.Textarea(attrs={'class': 'form-control', 'rows': '3'}),
+            'weight_amount': forms.NumberInput(attrs={'class': 'form-control', 'min': 'o'}),
+            'distance_miles': forms.NumberInput(attrs={'class': 'form-control', 'min': '0'})
+        }
+
+    def clean_duration_minutes(self):
+        duration_minutes = self.cleaned_data.get('duration_minutes')
+        if duration_minutes <= 0:
+            raise forms.ValidationError("Duration must be a positive number.")
+        return duration_minutes
+    
+    def clean_weight_amount(self):
+        weight_amount = self.cleaned_data.get('weight_amount')
+        if weight_amount < 0:
+            raise forms.ValidationError("Weight amount must be a positive number.")
+        return weight_amount
+    
+    def clean_distance_miles(self):
+        distance_miles = self.cleaned_data.get('distance_miles')
+        if distance_miles is not None and distance_miles < 0:
+            raise forms.ValidationError("The distance must be a positive number.")
