@@ -68,9 +68,15 @@ class Goal(models.Model):
 
 
 class WaterIntake(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="water")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="water_intake")
     date = models.DateField()
-    amount_ml = models.IntegerField()
+    amount_ml = models.DecimalField(max_digits=6, decimal_places=2)
+    amount_oz = models.DecimalField(max_digits=6, decimal_places=2, default=0)
+
+    def save(self, *args, **kwargs):
+        if not self.amount_oz:
+            self.amount_oz = self.amount_ml * 0.033814
+            super().save(*args, **kwargs)
 
     def __str__(self):
         return(f"{self.user.username}'s water intake on {self.date}")

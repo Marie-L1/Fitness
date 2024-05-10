@@ -8,8 +8,8 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 
 
-from .models import User, Workout, Goal
-from .forms import WorkoutForm, GoalForm
+from .models import User, Workout, Goal, WaterIntake
+from .forms import WorkoutForm, GoalForm, WaterIntakeForm
 
 
 
@@ -142,3 +142,6 @@ def edit_workout(request, workout_id):
 def user_profile(request):
     past_workouts = Workout.objects.filter(user=request.user).order_by("-date")
     return render(request, "tracker/user_profile.html", {"past_workouts": past_workouts})
+
+
+def log_water_intake(request):

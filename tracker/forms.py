@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Goal, Workout
+from .models import Goal, Workout, WaterIntake
 
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField()
@@ -61,3 +61,10 @@ class WorkoutForm(forms.ModelForm):
         distance_miles = self.cleaned_data.get('distance_miles')
         if distance_miles is not None and distance_miles < 0:
             raise forms.ValidationError("The distance must be a positive number.")
+        
+
+
+class WaterIntakeForm(forms.ModelForm):
+    class Meta:
+        model = WaterIntake
+        fields = ["amount_ml", "amount_oz"]
