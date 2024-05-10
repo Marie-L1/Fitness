@@ -145,3 +145,11 @@ def user_profile(request):
 
 
 def log_water_intake(request):
+    if request.method == "POST":
+        form = WaterIntakeForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("index")
+    else:
+        form = WaterIntakeForm()
+        return render(request, "water_intake.html", {"form": form})
