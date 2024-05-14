@@ -1,11 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import IntegrityError
+from django.db.models import Sum
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
+import matplotlib.pyplot as plt
+import base64
+from io import BytesIO
 
 
 from .models import User, Workout, Goal, WaterIntake
@@ -14,11 +18,34 @@ from .forms import WorkoutForm, GoalForm, WaterIntakeForm
 
 
 def index(request):
-      monthly_intake = WaterIntake.objects.filter(
-        date__year=request.year,
-        date__month=request.monthly_intake
+    # water intake calculation 
+    monthly_intake = WaterIntake.objects.filter(
+    date__year=request.year,
+    date__month=request.monthly_intake
     ).values("date").annotate(total_intake=Sum("amount_ml"))
       
+      # generate monthly graph
+    dates = [entry["date"] for entry in monthly_intake]
+    intake_values = [entry["total_intake" for entry in monthly_intake]]
+
+    plt.plot(dates, intake_values)
+    plt.xlabel("Date")
+    plt.ylabel("Water Intake (ml)")
+    plt.title("Monthly Water Intake")
+    plt.grid(True)
+
+    # convert the plots to image
+    buffer = BytesIO()
+    plt.savefig(buffer, format="png")
+    buffer.seek(0)
+    image_png = buffer.getvalue()
+    buffer.close()
+
+    # embed image into HTML
+    graph = base64.b64encode(image_png).decode("utf-8")
+
+    return render(request, "tracker/index.html", {"graph": graph})
+
     if request.user.is_authenticated:
         workout_history = Workout.objects.filter(user=request.user)
         current_goals= Goal.objects.filter(user=request.user, achieved=False)
