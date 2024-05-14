@@ -26,7 +26,7 @@ def index(request):
       
       # generate monthly graph
     dates = [entry["date"] for entry in monthly_intake]
-    intake_values = [entry["total_intake" for entry in monthly_intake]]
+    intake_values = [entry["total_intake"] for entry in monthly_intake]
 
     plt.plot(dates, intake_values)
     plt.xlabel("Date")
@@ -44,7 +44,7 @@ def index(request):
     # embed image into HTML
     graph = base64.b64encode(image_png).decode("utf-8")
 
-    return render(request, "tracker/index.html", {"graph": graph})
+    # get workout history and current goals
 
     if request.user.is_authenticated:
         workout_history = Workout.objects.filter(user=request.user)
@@ -57,6 +57,7 @@ def index(request):
         "workout_history": workout_history,
         "current_goals": current_goals
     }
+
     return render(request, "tracker/index.html", context)
 
 
