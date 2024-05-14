@@ -14,6 +14,11 @@ from .forms import WorkoutForm, GoalForm, WaterIntakeForm
 
 
 def index(request):
+      monthly_intake = WaterIntake.objects.filter(
+        date__year=request.year,
+        date__month=request.monthly_intake
+    ).values("date").annotate(total_intake=Sum("amount_ml"))
+      
     if request.user.is_authenticated:
         workout_history = Workout.objects.filter(user=request.user)
         current_goals= Goal.objects.filter(user=request.user, achieved=False)
@@ -26,6 +31,7 @@ def index(request):
         "current_goals": current_goals
     }
     return render(request, "tracker/index.html", context)
+
 
 
 def login_view(request):
