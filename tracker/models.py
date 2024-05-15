@@ -66,7 +66,6 @@ class Goal(models.Model):
         return self.description
     
 
-
 class WaterIntake(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="water_intake")
     date = models.DateField()
