@@ -80,3 +80,40 @@ class WaterIntake(models.Model):
 
     def __str__(self):
         return(f"{self.user.username}'s water intake on {self.date}")
+    
+
+# mental health section
+    
+class Emotion(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="emotions")
+    date = models.DateField()
+    emotion = models.CharField(max_length=100)
+
+    def __str__(self):
+        return f"{self.user.username}'s emotion on {self.date}"
+    
+
+class DailyGratitude(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="gratitude_entries")
+    date = models.DateField()
+    entry = models.TextField(max_length=500)
+
+    def __str__(self):
+        return f"{self.user.username}'s gratitude entery on {self.date}"
+    
+
+class SelfCareHabit(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="self_care_habits")
+    habit = models.CharField(max_length=100)
+
+    def __str__(self):
+        return self.habit
+    
+
+class EnergyLevel(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="energy_levels")
+    date = models.DateField()
+    level = models.IntegerField()
+
+    def __str__(self):
+        return f"{self.user.username}'s energy level on {self.date}"
