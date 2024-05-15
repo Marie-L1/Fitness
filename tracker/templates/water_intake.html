@@ -1,22 +1,36 @@
 {% extends "layout.html" %}
 
+{% block title %}
+    Water Intake Log
+{% endblock %}
 
 {% block body %}
-
+    <h2>Log Water Intake</h2>
     <div class="water_form">
-        <div class="manual_waterintake">
-            <form>
-                {% csrf_token %}
-                
-                {{ form.as_p}}
-
-                <button type="submit"></button>
-            </form>
-
-        </div>
-        <div class="options_waterintake">
-            
-        </div>
+        <form action="{% url 'log_water_intake' %}" mehtod="post">
+            {% csrf_token %}
+            <div class="manual_water_form">
+                <label for="amount_ml">Amount (ml):</label>
+                <input class="water_form_control" type="number" id="amount_ml" name="amount_ml">
+            </div>
+            <div class="manual_water_form">
+                <label for="amount_oz">Amount (oz):</label>
+                <input class="water_form_control" type="number" id="amount_oz" name="amount_oz">
+            </div>
+            <div class="quick_add_water">
+                <label>Quick Add:</label>
+                <div>
+                    <button type="button" class="btn btn_primary" onclick="addWater(250)">Glass (250ml)</button>
+                    <button type="button" class="btn btn_primary" onclick="addWater(250)">Bottle (500ml)</button>
+                    <button type="button" class="btn btn_primary" onclick="addWater(250)">Large Bottle (1 liter)</button>
+                </div>
+            </div>
+            <button tyoe="submit" class="btn btn_primary">Log Intake</button>
+        </form>
     </div>
+
+    <script>
+        
+    </script>
 
 {% endblock %}
