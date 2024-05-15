@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
-from .models import Goal, Workout, WaterIntake
+from .models import Goal, Workout, WaterIntake, Emotion, DailyGratitude, SelfCareHabit, EnergyLevel
 
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField()
@@ -93,3 +93,29 @@ class WaterIntakeForm(forms.ModelForm):
                 cleaned_data["amount_ml"] = 1000
                 cleaned_data["amount_oz"] = 24
             return cleaned_data
+        
+
+# mental health section
+        
+class EmotionForm(forms.ModelForm):
+    class Meta:
+        model = Emotion
+        fields = ["date", "emotion"]
+
+
+class DailyGratitudeForm(forms.ModelForm):
+    class Meta:
+        model = DailyGratitude
+        fields = ["date", "entry"]
+
+
+class SelfCareHabitForm(forms.ModelForm):
+    class Meta:
+        model = SelfCareHabit
+        fields = ["habit"]
+
+
+class EnergyLevelForm(forms.ModelForm):
+    class Meta:
+        model = EnergyLevel
+        fields = ["date", "level"]
