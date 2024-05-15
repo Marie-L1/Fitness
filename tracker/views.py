@@ -12,8 +12,8 @@ import base64
 from io import BytesIO
 
 
-from .models import User, Workout, Goal, WaterIntake
-from .forms import WorkoutForm, GoalForm, WaterIntakeForm
+from .models import User, Workout, Goal, WaterIntake, Emotion, SelfCareHabit, EnergyLevel, DailyGratitude
+from .forms import WorkoutForm, GoalForm, WaterIntakeForm, EmotionForm, SelfCareHabitForm, EnergyLevelForm, DailyGratitudeForm
 
 
 
@@ -187,3 +187,14 @@ def log_water_intake(request):
     else:
         form = WaterIntakeForm()
         return render(request, "water_intake.html", {"form": form})
+    
+
+def emotion(request):
+    if request.method == "POST":
+        form = EmotionForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("index")
+    else:
+        form = EmotionForm()
+    return render(request, "tracker/emotion.html", {"form": form})
