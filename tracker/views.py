@@ -189,12 +189,31 @@ def log_water_intake(request):
         return render(request, "water_intake.html", {"form": form})
     
 
-def emotion(request):
+def mental_health(request):
     if request.method == "POST":
-        form = EmotionForm(request.POST)
+        form_name = request.POST.get("form_name")
+        if form_name == "emotion":
+            form = EmotionForm(request.POST)
+        elif form_name == "daily_gratitude":
+            form = DailyGratitudeForm(request.POST)
+        elif form_name == "self_care_habit":
+            form = SelfCareHabitForm(request.POST)
+        elif form_name == "energy_level":
+            form = EnergyLevelForm(request.POST)
+
         if form.is_valid():
             form.save()
             return redirect("index")
     else:
-        form = EmotionForm()
-    return render(request, "tracker/emotion.html", {"form": form})
+        form_name = request.GET.get("form_name")
+        if form_name == "emotion":
+            form = EmotionForm()
+        elif form_name == "daily_gratitude":
+            form = DailyGratitudeForm()
+        elif form_name == "self_care_habit":
+            form = SelfCareHabitForm()
+        elif form_name == "energy_level":
+            form = EnergyLevelForm()
+        else:
+            form = None
+    return render(request, "tracker/mental_health.html", {"form": form})
