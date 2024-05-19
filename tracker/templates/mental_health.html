@@ -26,6 +26,10 @@
             <form method="POST" action="{% log_mental_health %}">
                 {% csrf_token %}
                 {{ gratitude_form.as_p }}
+                <div>
+                    <label for="id_gratitude">Gratitude</label>
+                    <textarea name="gratitude" id="id_gratitude" class="gratitude_form" rows="10"></textarea>
+                </div>
                 <input type="hidden" name="gratitude_form" value="gratitude">
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
@@ -70,6 +74,10 @@
             <form method="POST" action="{% log_mental_health %}">
                 {% csrf_token %}
                 {{ rant_form.as_p }}
+                <div>
+                    <label for="id_rant">Rant</label>
+                    <textarea name="rant" id="id_rant" class="rant_form" rows="10"></textarea>
+                </div>
                 <input type="hidden" name="rant_form" value="rant">
                 <button type="submit" class="btn btn-primary">Submit</button>
             </form>
