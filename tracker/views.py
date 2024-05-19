@@ -5,7 +5,7 @@ from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django import forms
+from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 import matplotlib.pyplot as plt
 import base64
