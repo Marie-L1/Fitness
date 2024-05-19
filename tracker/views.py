@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import IntegrityError
-from django.db.models import Sum
+from django.db.models import Sum, Count, Avg
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
@@ -220,4 +220,60 @@ def mental_health(request):
         "self_care_habit_form": self_care_habit_form,
         "energy_level_form": energy_level_form,
         "rant_form": rant_form
+    })
+
+
+@login_required
+def mental_health_summary(request):
+    emotions = Emotion.objects.filter(user=request.user, date__month=timezone.now().month)
+    daily_gratitude = DailyGratitude.objects.filer(user=request.user, date__month=timezone.now().month)
+    self_care_habits = SelfCareHabit.objects.filter(user=request.user, date__month=timezone.now().month)
+    energy_levels = EnergyLevel.objects.filer(user=request.user, date__month=timezone.now().month)
+    rants = Rant.objects.filter(user=request.user, date__month=timezone.now().month)
+
+    # data for pie chart and graph
+    emotion_counts = emotions.values("emotion").annotate(count=Count("emotion"))
+    avg_energy_level = energy_levels.aggregate(avg_level=Avg("energy_level"))["avg_level"]
+
+    # generate pie chart for emotions
+    labels = [entry["emotion"] for entry in emotion_counts]
+    sizes = [entry["count"] for entry in emotion_counts]
+
+    fig1, ax1 = plt.subplots()
+    ax1.pie(sizes, lables=labels, autopct="%1.1f%%", startangle=90)
+    ax1.axis("equal")
+
+    # save pie chart to png image
+    buffer = BytesIO()
+    plt.savefig(buffer, format="png")
+    emotion_chart = base64.b64encoded(buffer.getvalue()).decode("utf-8")
+    buffer.close()
+
+    # create the line graph for energy levels
+    dates = [entry["date"] for entry in energy_levels]
+    levels = [entry["energy_level"] for entry in energy_levels]
+
+    plt.figure()
+    plt.plot(dates, levels)
+    plt.xlabel("Date")
+    plt.ylabel("Daily Energy Level")
+    plt.grid(True)
+
+    # Save the line graph to png image
+    buffer = BytesIO()
+    plt.savefit(buffer, format="png")
+    buffer.seek(0)
+    energy_level_chart = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    buffer.close()
+
+    return render(request, "tracker/mental_health_summary.html", {
+        "emotions": emotions,
+        "daily_gratitude": daily_gratitude,
+        "self_care_habits": self_care_habits,
+        "energy_levels": energy_levels,
+        "rants": rants,
+        "emotion_counts": emotion_counts,
+        "avg_energy_level": avg_energy_level,
+        "emotion_chart": emotion_chart,
+        "energy_level_chart": energy_level_chart
     })
