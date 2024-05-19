@@ -12,8 +12,8 @@ import base64
 from io import BytesIO
 
 
-from .models import User, Workout, Goal, WaterIntake, Emotion, SelfCareHabit, EnergyLevel, DailyGratitude
-from .forms import WorkoutForm, GoalForm, WaterIntakeForm, EmotionForm, SelfCareHabitForm, EnergyLevelForm, DailyGratitudeForm
+from .models import User, Workout, Goal, WaterIntake, Emotion, SelfCareHabit, EnergyLevel, DailyGratitude, Rant
+from .forms import WorkoutForm, GoalForm, WaterIntakeForm, EmotionForm, SelfCareHabitForm, EnergyLevelForm, DailyGratitudeForm, RantForm
 
 
 
@@ -192,6 +192,7 @@ def log_water_intake(request):
 def mental_health(request):
     if request.method == "POST":
         form_name = request.POST.get("form_name")
+
         if form_name == "emotion":
             form = EmotionForm(request.POST)
         elif form_name == "daily_gratitude":
@@ -202,18 +203,21 @@ def mental_health(request):
             form = EnergyLevelForm(request.POST)
 
         if form.is_valid():
+            instance = form.save(commit=False)
+            instance.user = request.user
             form.save()
             return redirect("index")
-    else:
-        form_name = request.GET.get("form_name")
-        if form_name == "emotion":
-            form = EmotionForm()
-        elif form_name == "daily_gratitude":
-            form = DailyGratitudeForm()
-        elif form_name == "self_care_habit":
-            form = SelfCareHabitForm()
-        elif form_name == "energy_level":
-            form = EnergyLevelForm()
-        else:
-            form = None
-    return render(request, "tracker/mental_health.html", {"form": form})
+    
+    emotion_form = EmotionForm()
+    daily_gratitude_form  = DailyGratitudeForm()
+    self_care_habit_form = SelfCareHabitForm
+    energy_level_form = EnergyLevelForm()
+    rant_form = RantForm()
+
+    return render(request, "tracker/mental_health.html", {
+        "emotion_form": emotion_form,
+        "daily_gratitude_form": daily_gratitude_form,
+        "self_care_habit_form": self_care_habit_form,
+        "energy_level_form": energy_level_form,
+        "rant_form": rant_form
+    })
