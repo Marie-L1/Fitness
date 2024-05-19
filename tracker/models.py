@@ -116,3 +116,12 @@ class EnergyLevel(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s energy level on {self.date}"
+    
+
+class Rant(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="rants")
+    date = models.DateField(auto_no_add=True)
+    rant = models.TextField()
+
+    def __str__(self):
+        return f"Rant by {self.user.username} on {self.date}"
