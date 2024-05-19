@@ -1,1 +1,73 @@
 {% extends "layout.html" %}
+
+{% block body %}
+
+<div class="container mt-4">
+    <h1 class="text-center">{{ user.username }}'s Mental Health Summary</h1>
+
+    <!-- emotions pie chart -->
+    <div class="card mb-4">
+        <div>
+           <h2>Monthly Emotions</h2> 
+        </div>
+        <div class="card-body">
+            <img src="data:image/png;base64,{{ emotion_chart }}" alt="Emotions Pie Chart">
+        </div>
+    </div>
+
+    <!--Daily Gratitude logs-->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2>Daily Gratitude Logs</h2>
+        </div>
+        <div class="card-body">
+            <ul>
+                {% for gratidue in daily_gratitudes %}
+                    <li>{{ gratitude.date }}: {{ gratidue.gratitude }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+     <!--Self-care habits-->
+     <div class="card mb-4">
+        <div class="card-header">
+            <h2>Self-Care Habit Logs</h2>
+        </div>
+        <div class="card-body">
+            <ul>
+                {% for habit in self_care_habits %}
+                    <li>{{ habit.date }}: {{ habit.habit }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+    <!-- energy level graph -->
+    <div class="card mb-4">
+        <div class="card-header">
+           <h2>Monthly Energy Levels</h2> 
+        </div>
+        <div class="card-body">
+            <img src="data:image/png;base64,{{ energy_level_chart }}" alt="Energy Level Chart">
+        </div>
+    </div>
+
+
+     <!--Rant section-->
+     <div class="card mb-4">
+        <div class="card-header">
+            <h2>Rant Logs</h2>
+        </div>
+        <div class="card-body">
+            <ul>
+                {% for rants in rants %}
+                    <li>{{ habit.date }}: {{ rant.rant }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}
