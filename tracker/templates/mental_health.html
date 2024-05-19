@@ -1,11 +1,80 @@
 {% extends "layout.html" %}
 
 {% block body %}
-    <div>
-        <form>
-            <label></label>
-            <input stype="submit">
-        </form>
-        
+<div class="container mt-4">
+    <h1 class="text-center">Mental Health Tracker</h1>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2>Log Daily Emotion</h2>
+        </div>
+        <div class="card-body" id="emotion_log">
+            <form method="POST" action="{% log_mental_health %}">
+                {% csrf_token %}
+                {{ emotion_form.as_p }}
+                <input type="hidden" name="emotionform" value="emotion">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
     </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2>Log Daily Gratitude</h2>
+        </div>
+        <div class="card-body" id="gratitude_log">
+            <form method="POST" action="{% log_mental_health %}">
+                {% csrf_token %}
+                {{ gratitude_form.as_p }}
+                <input type="hidden" name="gratitude_form" value="gratitude">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2>Log Self-Care Habit</h2>
+        </div>
+        <div class="card-body" id="self_care_log">
+            <form method="POST" action="{% log_mental_health %}">
+                {% csrf_token %}
+                {{ self_care_form.as_p }}
+                <input type="hidden" name="selfcareform" value="selfcare">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2>Log Daily Energy Level</h2>
+        </div>
+        <div class="card-body" id="energy_log">
+            <form method="POST" action="{% log_mental_health %}">
+                {% csrf_token %}
+                {{ energy_level_form.as_p }}
+                <input type="hidden" name="energy_level_form" value="energy">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h2>Rant Section</h2>
+        </div>
+        <div class="card-body" id="rant_log">
+            <form method="POST" action="{% log_mental_health %}">
+                {% csrf_token %}
+                {{ rant_form.as_p }}
+                <input type="hidden" name="rant_form" value="rant">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
