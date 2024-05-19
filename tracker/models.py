@@ -120,7 +120,7 @@ class EnergyLevel(models.Model):
 
 class Rant(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="rants")
-    date = models.DateField(auto_no_add=True)
+    date = models.DateField(auto_now_add=True)
     rant = models.TextField()
 
     def __str__(self):
