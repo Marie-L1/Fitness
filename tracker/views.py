@@ -62,9 +62,8 @@ def index(request):
 
 
 
-def login_view(request):
+def login(request):
     if request.method == "POST":
-
         # Attempt to sign user in
         username = request.POST["username"]
         password = request.POST["password"]
@@ -82,7 +81,7 @@ def login_view(request):
         return render(request, "tracker/login.html")
 
 
-def logout_view(request):
+def logout(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
 
