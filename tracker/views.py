@@ -95,8 +95,9 @@ def register(request):
             username = user.username
             password = form.cleaned_data.get("password1")
             user = authenticate(username=username, password=password)
-            login(request, user)
-            return HttpResponseRedirect(reverse("index"))
+            if user is not None:
+                login(request, user)
+                return HttpResponseRedirect(reverse("index"))
         else:
             form = UserCreationForm()
         return render(request, "tracker/register.html", {"form": form})
