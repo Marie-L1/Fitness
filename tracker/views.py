@@ -73,8 +73,8 @@ def login_view(request):
         if user is not None:
             login(request, user)
             return HttpResponseRedirect(reverse("index"))
-        else:
-            return render(request, "login.html", {"message": "Invalid username and/or password."})
+    else:
+        return render(request, "login.html", {"message": "Invalid username and/or password."})
     return render(request, "login.html")
 
 
@@ -94,9 +94,9 @@ def register(request):
             if user is not None:
                 login(request, user)
                 return HttpResponseRedirect(reverse("index"))
-        else:
-            form = UserCreationForm()
-        return render(request, "register.html", {"form": form})
+    else:
+        form = UserCreationForm()
+    return render(request, "register.html", {"form": form})
     
 
 @login_required
