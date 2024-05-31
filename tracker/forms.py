@@ -35,7 +35,7 @@ class GoalForm(forms.ModelForm):
 class WorkoutForm(forms.ModelForm):
     class Meta:
         model = Workout
-        fields = ["date", "exercise", "duration_minutes", "notes", "weight_amount", "weight_type", "activity_type", "disatnce_miles"]    
+        fields = ["date", "exercise", "duration_minutes", "notes", "weight_amount", "weight_type", "activity_type", "distance_miles"]    
         widgets = {
             'date': forms.DateInput(attrs={"class": "form-control", "type": "date"}),
             'exercise': forms.TextInput(attrs={"class": "form-control"}),
