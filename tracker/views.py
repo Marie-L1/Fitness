@@ -58,7 +58,7 @@ def index(request):
         "current_goals": current_goals
     }
 
-    return render(request, "tracker/index.html", context)
+    return render(request, "index.html", context)
 
 
 
@@ -74,8 +74,8 @@ def login_view(request):
             login(request, user)
             return HttpResponseRedirect(reverse("index"))
         else:
-            return render(request, "tracker/login.html", {"message": "Invalid username and/or password."})
-    return render(request, "tracker/login.html")
+            return render(request, "login.html", {"message": "Invalid username and/or password."})
+    return render(request, "login.html")
 
 
 def logout_view(request):
@@ -96,7 +96,7 @@ def register(request):
                 return HttpResponseRedirect(reverse("index"))
         else:
             form = UserCreationForm()
-        return render(request, "tracker/register.html", {"form": form})
+        return render(request, "register.html", {"form": form})
     
 
 @login_required
@@ -110,7 +110,7 @@ def new_goal(request):
             return redirect("index")
     else:
         form = GoalForm()
-    return render(request, "tracker/new_goal.html", {"form":form})
+    return render(request, "new_goal.html", {"form":form})
 
 def edit_goal(request, goal_id):
     if request.method == "POST" and request.is_ajax():
@@ -147,7 +147,7 @@ def log_workout(request):
             return redirect("index")
     else:
         form = WorkoutForm()
-    return render(request, "tracker/log_workout.html", {"form": form})
+    return render(request, "log_workout.html", {"form": form})
 
 
 def delete_workout(request, workout_id):
@@ -166,12 +166,12 @@ def edit_workout(request, workout_id):
             return redirect("user_profile")
     else:
         form = WorkoutForm(instance=workout)
-    return render(request, "tracker/edit_workout.html", {"form": form})
+    return render(request, "edit_workout.html", {"form": form})
 
 
 def user_profile(request):
     past_workouts = Workout.objects.filter(user=request.user).order_by("-date")
-    return render(request, "tracker/user_profile.html", {"past_workouts": past_workouts})
+    return render(request, "user_profile.html", {"past_workouts": past_workouts})
 
 
 def log_water_intake(request):
@@ -210,7 +210,7 @@ def mental_health(request):
     energy_level_form = EnergyLevelForm()
     rant_form = RantForm()
 
-    return render(request, "tracker/mental_health.html", {
+    return render(request, "mental_health.html", {
         "emotion_form": emotion_form,
         "daily_gratitude_form": daily_gratitude_form,
         "self_care_habit_form": self_care_habit_form,
@@ -262,7 +262,7 @@ def mental_health_summary(request):
     energy_level_chart = base64.b64encode(buffer.getvalue()).decode("utf-8")
     buffer.close()
 
-    return render(request, "tracker/mental_health_summary.html", {
+    return render(request, "mental_health_summary.html", {
         "emotions": emotions,
         "daily_gratitude": daily_gratitude,
         "self_care_habits": self_care_habits,
