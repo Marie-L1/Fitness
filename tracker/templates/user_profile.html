@@ -1,9 +1,26 @@
 {% extends "layout.html" %}
 
-{% block title %}
-    <h3>{{ user.username }}'s Profile</h3>
-{% endblock %}
-
 {% block body %}
+<div class="container">
+    <h1>{{ user.username }}'s Profile</h1>
+
+    <h2>Past Workouts</h2>
+    {% if past_workout %}
+        {% for workout in past_workouts %}
+        <div class="card mb-3">
+            <div class="card-header">
+                {{ workout.date }}
+            </div>
+            <div>
+                <h4 class="card-title">Exercise: {{ workout.exercise }}</h4>
+                <p class="card-text">Duration {{ workout.duration_minutes }} minutes</p>
+                <p class="card-text">Calories Burned: {{ workout.calories_burned }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p>No workouts logged.</p>
+    {% endif %}
+</div>
 
 {% endblock %}
