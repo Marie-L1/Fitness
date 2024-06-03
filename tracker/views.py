@@ -214,12 +214,12 @@ def mental_health(request):
             instance.user = request.user
             form.save()
             return redirect("index")
-    
-    emotion_form = EmotionForm()
-    daily_gratitude_form  = DailyGratitudeForm()
-    self_care_habit_form = SelfCareHabitForm
-    energy_level_form = EnergyLevelForm()
-    rant_form = RantForm()
+    else:
+        emotion_form = EmotionForm()
+        daily_gratitude_form  = DailyGratitudeForm()
+        self_care_habit_form = SelfCareHabitForm
+        energy_level_form = EnergyLevelForm()
+        rant_form = RantForm()
 
     return render(request, "mental_health.html", {
         "emotion_form": emotion_form,
