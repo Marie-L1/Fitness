@@ -15,7 +15,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 from .models import User, Workout, Goal, WaterIntake, Emotion, SelfCareHabit, EnergyLevel, DailyGratitude, Rant
-from .forms import WorkoutForm, GoalForm, WaterIntakeForm, EmotionForm, SelfCareHabitForm, EnergyLevelForm, DailyGratitudeForm, RantForm
+from .forms import WorkoutForm, GoalForm, WaterIntakeForm, EmotionForm, SelfCareHabitForm, EnergyLevelForm, DailyGratitudeForm, RantForm, RegistrationForm
 
 
 
@@ -91,7 +91,7 @@ def logout_view(request):
 def register(request):
     if request.method == "POST":
         logger.debug("Registration attempt")
-        form = UserCreationForm(request.POST)
+        form = RegistrationForm(request.POST)
         if form.is_valid():
             logger.debug("Form is valid")
             user = form.save()
@@ -106,7 +106,7 @@ def register(request):
             logger.warning(f"Form is not valid.")
             return render(request, "register.html", {"form": form})
     else:
-        form = UserCreationForm()
+        form = RegistrationForm()
     return render(request, "register.html", {"form": form})
     
 
