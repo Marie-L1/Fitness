@@ -67,6 +67,7 @@ def index(request):
 def login_view(request):
     if request.method == "POST":
         # Attempt to sign user in
+        logger.debug("login attempt")
         username = request.POST["username"]
         password = request.POST["password"]
         user = authenticate(request, username=username, password=password)
@@ -74,9 +75,10 @@ def login_view(request):
         # Check if authentication successful
         if user is not None:
             login(request, user)
+            logger.debug("login successful")
             return HttpResponseRedirect(reverse("index"))
     else:
-        logger.warning(f"Invalid login attempt for username: {username}")
+        logger.warning(f"Invalid username and/or password.")
         return render(request, "login.html", {"message": "Invalid username and/or password."})
     return render(request, "login.html")
 
@@ -88,16 +90,20 @@ def logout_view(request):
 
 def register(request):
     if request.method == "POST":
+        logger.debug("Registration attempt")
         form = UserCreationForm(request.POST)
         if form.is_valid():
+            logger.debug("Form is valid")
             user = form.save()
             username = user.username
             password = form.cleaned_data.get("password1")
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
+                logger.debug("User authentication failed after registration.")
                 return HttpResponseRedirect(reverse("index"))
         else:
+            logger.warning(f"Form is not valid.")
             return render(request, "register.html", {"form": form})
     else:
         form = UserCreationForm()
