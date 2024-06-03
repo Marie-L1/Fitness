@@ -1,24 +1,36 @@
 {% extends "layout.html" %}
 
 {% block body %}
-    {% for workout in workouts %}
-        <div>
-            <h2>{{ workout.date }}</h2>
-            <p>Exercise: {{ workout.exercise }}</p>
-            <p>Duration: {{ workout.duration_minutes }} minutes</p>
-            <p>Weight: {{ workout.weight_amount }} {{ workout.get_weight_unit_display }}</p>
-            <br>
-            <p>Activity: {{ workout.get_activity_type_display }}</p>
-            <p>Distance: {{ workout.distance_miles }} {{ workout.get_distance_unit_display }}</p>
-            <p>Calories Burned: {{ workout.calories_burned }}</p>
-            <p>Notes: {{ workout.notes }}</p>
-        </div>
-        <a href="{% url 'edit_workout' workout_id %}">Edit Log</a>
-        <form action="{% url 'delete_workout' workout.id %}" method="post" style="display: inline;"
-            {% csrf_token %}
-            <button type="submit">Delete Log</button>
-        </form>
-    {% empty %}
-        <p>No logged workouts available.</p>
-    {% endfor %}
+{% extends "base.html" %}
+{% block content %}
+  <!-- Display detailed logged workout information -->
+  <h2>Logged Workouts</h2>
+  {% for workout in past_workouts %}
+    <div class="workout-container">
+      <h3>{{ workout.date }}</h3>
+      <p>Exercise: {{ workout.exercise }}</p>
+      <p>Duration: {{ workout.duration_minutes }} minutes</p>
+      {% if workout.weight_amount %}
+        <p>Weight Amount: {{ workout.weight_amount }} {{ workout.weight_unit }}</p>
+      {% endif %}
+      {% if workout.distance_miles %}
+        <p>Distance: {{ workout.distance_miles }} miles</p>
+      {% endif %}
+      <p>Exercise Type: {{ workout.activity_type }}</p>
+      {% if workout.calories_burned %}
+        <p>Calories Burned: {{ workout.calories_burned }}</p>
+      {% endif %}
+      {% if workout.notes %}
+        <p>Notes: {{ workout.notes }}</p>
+      {% endif %}
+      
+      <!-- Option to edit workout -->
+      <a href="{% url 'edit_workout' workout.id %}">Edit</a>
+      <!-- Option to delete workout -->
+      <form action="{% url 'delete_workout' workout.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Delete</button>
+      </form>
+    </div>
+  {% endfor %}
 {% endblock %}
