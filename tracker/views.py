@@ -217,7 +217,7 @@ def mental_health(request):
     else:
         emotion_form = EmotionForm()
         daily_gratitude_form  = DailyGratitudeForm()
-        self_care_habit_form = SelfCareHabitForm
+        self_care_habit_form = SelfCareHabitForm()
         energy_level_form = EnergyLevelForm()
         rant_form = RantForm()
 
