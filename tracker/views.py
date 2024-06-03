@@ -185,7 +185,7 @@ def user_profile(request):
     return render(request, "user_profile.html", {"past_workouts": past_workouts})
 
 
-def log_water_intake(request):
+def water_intake(request):
     if request.method == "POST":
         form = WaterIntakeForm(request.POST)
         if form.is_valid():

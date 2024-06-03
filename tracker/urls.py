@@ -12,5 +12,7 @@ urlpatterns = [
     path("profile/", views.user_profile, name="user_profile"),
     path("edit_workout/<int:workout_id>", views.edit_workout, name="edit_workout"),
     path("mental_health/", views.mental_health, name="mental_health"),
-    path("mental_health_summary/", views.mental_health_summary, name="mental_health_summary")
+    path("mental_health_summary/", views.mental_health_summary, name="mental_health_summary"),
+    path("log_workout/", views.log_workout, name="log_workout"),
+    path("water_intake/", views.water_intake, name="water_intake")
 ]

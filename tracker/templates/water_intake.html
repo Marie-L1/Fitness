@@ -7,7 +7,7 @@
 {% block body %}
     <h2>Log Water Intake</h2>
     <div class="water_form">
-        <form action="{% url 'tracker:log_water_intake' %}" mehtod="post">
+        <form action="{% url 'tracker:water_intake' %}" mehtod="post">
             {% csrf_token %}
             <div class="manual_water_form">
                 <label for="amount_ml">Amount (ml):</label>
