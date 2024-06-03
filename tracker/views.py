@@ -108,7 +108,19 @@ def register(request):
     else:
         form = RegistrationForm()
     return render(request, "register.html", {"form": form})
-    
+
+@login_required
+def user_profile(request):
+    user = request.user
+    past_workouts = Workout.objects.filter(user=user).order_by("-date")
+
+    context = {
+        "user": user,
+        "past_workouts": past_workouts,
+
+    }
+    return render(request, "user_profile.html", context)
+
 
 @login_required
 def new_goal(request):
@@ -148,6 +160,8 @@ def calculated_calories_burned(activity_type, duration_minutes):
     else:
         return None
 
+
+@login_required
 def log_workout(request):
     if request.method == "POST":
         form = WorkoutForm(request.POST)
@@ -180,11 +194,8 @@ def edit_workout(request, workout_id):
     return render(request, "edit_workout.html", {"form": form})
 
 
-def user_profile(request):
-    past_workouts = Workout.objects.filter(user=request.user).order_by("-date")
-    return render(request, "user_profile.html", {"past_workouts": past_workouts})
 
-
+@login_required
 def water_intake(request):
     if request.method == "POST":
         form = WaterIntakeForm(request.POST)
@@ -196,6 +207,7 @@ def water_intake(request):
         return render(request, "water_intake.html", {"form": form})
     
 
+@login_required
 def mental_health(request):
     if request.method == "POST":
         form_name = request.POST.get("form_name")
