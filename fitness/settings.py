@@ -146,17 +146,29 @@ LOGGING = {
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'formatters': {
+        'simple': {
+            'format': '{levelname} {message}',
+            'style': '{',
         },
     },
     'root': {
         'handlers': ['console'],
-        'level': 'DEBUG',
+        'level': 'WARNING',  # Set the default level to WARNING
     },
     'loggers': {
         'django': {
             'handlers': ['console'],
-            'level': 'DEBUG',
+            'level': 'WARNING',  # Set Django's default logging level to WARNING
             'propagate': True,
+        },
+        'tracker': {  # Assuming your app is named 'tracker'
+            'handlers': ['console'],
+            'level': 'DEBUG',  # Set your app's logging level to DEBUG for detailed info
+            'propagate': False,
         },
     },
 }
