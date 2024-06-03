@@ -10,7 +10,9 @@ from django.contrib.auth.forms import UserCreationForm
 import matplotlib.pyplot as plt
 import base64
 from io import BytesIO
+import logging
 
+logger = logging.getLogger(__name__)
 
 from .models import User, Workout, Goal, WaterIntake, Emotion, SelfCareHabit, EnergyLevel, DailyGratitude, Rant
 from .forms import WorkoutForm, GoalForm, WaterIntakeForm, EmotionForm, SelfCareHabitForm, EnergyLevelForm, DailyGratitudeForm, RantForm
@@ -74,6 +76,7 @@ def login_view(request):
             login(request, user)
             return HttpResponseRedirect(reverse("index"))
     else:
+        logger.warning(f"Invalid login attempt for username: {username}")
         return render(request, "login.html", {"message": "Invalid username and/or password."})
     return render(request, "login.html")
 
@@ -90,10 +93,12 @@ def register(request):
             user = form.save()
             username = user.username
             password = form.cleaned_data.get("password1")
-            user = authenticate(username=username, password=password)
+            user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
                 return HttpResponseRedirect(reverse("index"))
+        else:
+            return render(request, "register.html", {"form": form})
     else:
         form = UserCreationForm()
     return render(request, "register.html", {"form": form})
