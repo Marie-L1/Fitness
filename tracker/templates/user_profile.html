@@ -12,9 +12,16 @@
                 {{ workout.date }}
             </div>
             <div>
-                <h4 class="card-title">Exercise: {{ workout.exercise }}</h4>
-                <p class="card-text">Duration {{ workout.duration_minutes }} minutes</p>
-                <p class="card-text">Calories Burned: {{ workout.calories_burned }}</p>
+                <p class="card-title">Exercise: {{ workout.exercise }}</p>
+                <p class="card-text">Duration: {{ workout.duration_minutes }} minutes</p>
+                {% if workout.calories_burned %}
+                    <p class="card-text">Calories Burned: {{ workout.calories_burned }}</p>
+                {% endif %}
+                <a href="{% url 'tracker:edit_workout' workout.id %}">Edit</a>
+                <form action="{% url 'tracker:delete_workout' %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit">Delete</button>
+                </form>
             </div>
         </div>
         {% endfor %}
