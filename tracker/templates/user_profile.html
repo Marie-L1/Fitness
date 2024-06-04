@@ -1,9 +1,40 @@
 {% extends "layout.html" %}
 
 {% block body %}
-<div class="container">
-    <h1>{{ user.username }}'s Profile</h1>
+<h1>{{ user.username }}'s Profile</h1>
 
+<div class="container">
+    <h2>Monthly Water Intake</h2>
+    <div id="water-intake-chart-container">
+
+    </div>
+</div>
+
+<div class="container">
+    <h2>Monthly Emotions</h2>
+    <div id="mental-health-log-container">
+
+    </div>
+</div>
+
+<div class="container">
+    <h2>Logged Mental Health</h2>
+    {% for log in mental_health_log %}
+    <div class="mental-health-log-container">
+        <p>Date: {{ log.date }}</p>
+        <p>Emotion: {{ emotion_form.as_p }}</p>
+        <p>Self-Care Habit: {{ self_care_form.as_p }}</p>
+        <p>Daily Graitude: {{ gratitude_form.as_p }}</p>
+
+        <a href="{% url 'edit_mental_health_log' log.id %}" method="post">Edit</a>
+        <form action="{% url 'delete_mental_health_log' log.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit">Delete</button>
+        </form>
+    </div>
+</div>
+
+<div class="container">
     <h2>Past Workouts</h2>
     {% if past_workout %}
         {% for workout in past_workouts %}
@@ -30,8 +61,4 @@
     {% endif %}
 </div>
 
-
-<div class="container">
-    <h2></h2
-</div>
 {% endblock %}
