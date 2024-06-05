@@ -111,14 +111,41 @@ def register(request):
         form = RegistrationForm()
     return render(request, "register.html", {"form": form})
 
+
 @login_required
 def user_profile(request):
     user = request.user
     past_workouts = Workout.objects.filter(user=user).order_by("-date")
 
+    current_month = timezone.now().month
+    emotions = Emotion.objects.filter(user=request.user, date__month=current_month)
+    emotion_counts = emotions.values("emotion").annotate(count=Count("emotion"))
+
+    # prepare the data for the pie chart of emotions
+    emotion_data = {entry["emotion"]: entry["count"] for entry in emotion_counts}
+
+    # create the monthly pie chart
+    labels = emotion_data.keys()
+    sizes = emotion_data.values()
+    colors = ["#ff9999", "#66b3ff", "#99ff99", "#ffcc99"]
+
+    fig1, ax1 = plt.subplots()
+    ax1.pie(sizes, labels=labels, autopct="%1.1f%%", startangle=90, colors=colors)
+    ax1.axis("equal") # equal ratio so the pie chart is a circle
+
+    # save the plot to a png image
+    buffer = BytesIO()
+    plt.savefig(buffer, format="png")
+    plt.close(fig1)
+    buffer.seek(0)
+    image_png = buffer.getvalue()
+    buffer.close()
+    emotion_chart = base64.b64encode(image_png).decode("utf-8")
+
     context = {
         "user": user,
         "past_workouts": past_workouts,
+        "emotion_chart": emotion_chart,
 
     }
     return render(request, "user_profile.html", context)
