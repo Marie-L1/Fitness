@@ -7,10 +7,12 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
+from django.db.models import Count
 import matplotlib.pyplot as plt
 import base64
 from io import BytesIO
 import logging
+from collections import Counter
 
 logger = logging.getLogger(__name__)
 
@@ -134,6 +136,7 @@ def new_goal(request):
     else:
         form = GoalForm()
     return render(request, "new_goal.html", {"form":form})
+
 
 def edit_goal(request, goal_id):
     if request.method == "POST" and request.is_ajax():
