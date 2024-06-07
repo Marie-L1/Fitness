@@ -13,6 +13,9 @@ import base64
 from io import BytesIO
 import logging
 from collections import Counter
+import calendar
+from collections import defaultdict
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -22,13 +25,19 @@ from .forms import WorkoutForm, GoalForm, WaterIntakeForm, EmotionForm, SelfCare
 
 
 def index(request):
+    user = request.user
+    today = timezone.now().date()
+    current_month = timezone.now().month
+
+    # Goals
+    current_goals = Goal.objects.filter(user=user, achieved=False)
+
     # water intake calculation 
-    monthly_intake = WaterIntake.objects.filter(
-    date__year=request.year,
-    date__month=request.monthly_intake
-    ).values("date").annotate(total_intake=Sum("amount_ml"))
+    daily_intake = WaterIntake.objects.filter(user=user, date=today)
+    daily_intake_ml = daily_intake.aggregate(total_intake=Sum("amount_ml"))
       
-      # generate monthly graph
+    # generate monthly graph
+    monthly_intake = WaterIntake.objects.filter(user=user, date__year=today.year, date__month=current_month).values("date").annotate(total_intake=Sum("amount_ml"))
     dates = [entry["date"] for entry in monthly_intake]
     intake_values = [entry["total_intake"] for entry in monthly_intake]
 
