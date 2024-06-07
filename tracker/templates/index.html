@@ -53,7 +53,19 @@
 
 
     <!--Monthly Date Log Heatmap-->
-    
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Monthly Data Logged</h3> # make it so the month changes
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-wrap" id="heatmap">
+                {% for day in heatmap_values %}
+                    <div class="p-2" style="width: 20px; height: 20px; background-color: rgb(167, 233, 236) {{ day|floatformat:1 }}); margin: 1px;">
+                {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 
 
 
