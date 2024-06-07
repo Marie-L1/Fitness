@@ -38,7 +38,18 @@
 
 
     <!--Daily Emotion Logged for the day-->
-    <div class="card mb-4"></div>
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Today's Emotion</h3>
+        </div>
+        <div class="card-body">
+            {% if today_emotion %}
+                <p>{{ today_emotion.emotion }}</p>
+            {% else %}
+                <p>No emotion logged today.</p>
+            {% endif %}
+        </div>
+    </div>
 
 
     <!--Monthly Date Log Heatmap-->
