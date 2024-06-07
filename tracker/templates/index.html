@@ -13,7 +13,14 @@
         <div class="card-body">
           <ul>
             {% for goal in current_goals %}
-                <li clas="editable" data-goal-id="{{ goal.id }}">{{ goal.description }}</li>
+                <li clas="list-group-item d-flex justify-content-between align-items-center">
+                    <form method="POST" action="{% url 'edit_goal' goal.id %}" class="d-flex align-items-center w-100" data-goal-id="{{ goal.id }}">
+                        {% csrf_token %}
+                        <input type="checkbox" name="is_complete" {% if goal.achieved %}checked{% endif %} onchange="this.form.submit()" class="mr-3">
+                        <input type="text" name="description" value="{% url 'edit_goal' goal.id %}" class="form-control mr-3">
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">Update</button>
+                    </form>
+                </li>
             {% endfor %}
         </ul>  
         </div>
