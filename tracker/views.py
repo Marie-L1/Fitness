@@ -142,10 +142,36 @@ def user_profile(request):
     buffer.close()
     emotion_chart = base64.b64encode(image_png).decode("utf-8")
 
+    # Water intake monthly graph
+    water_intake = WaterIntake.objects.filter(user=request.user, date__month=current_month)
+
+    daily_water_intake = water_intake.values("date").annotate(total_amount=Sum("amount_ml")).order_by("date")
+
+    # prep data for the graph
+    dates = [entry["date"] for entry in daily_water_intake]
+    amounts = [entry["total_amount"] for entry in daily_water_intake]
+
+    # lines for graph
+    fig2, ax2 = plt.subplot()
+    ax2.plot(dates, amounts, marker="o")
+    ax2.set_x_label("Date")
+    ax2.set_ylabel("Monthly Water Intake")
+    plt.xticks(rotation=45)
+
+    # save plots as png image
+    buffer = BytesIO
+    plt.savefig(buffer, format="png")
+    plt.close(fig2)
+    buffer.seek(0)
+    image_png = buffer.getvalue()
+    buffer.close()
+    water_intake_chart = base64.b64encode(image_png).decode("utf-8")
+
     context = {
         "user": user,
         "past_workouts": past_workouts,
         "emotion_chart": emotion_chart,
+        "water_intake_chart": water_intake_chart,
 
     }
     return render(request, "user_profile.html", context)
