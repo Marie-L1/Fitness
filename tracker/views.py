@@ -53,9 +53,26 @@ def index(request):
     buffer.seek(0)
     image_png = buffer.getvalue()
     buffer.close()
-
     # embed image into HTML
     graph = base64.b64encode(image_png).decode("utf-8")
+    plt.close()
+
+    # daily emotion logged for today
+    today_emotion = Emotion.objects.filter(user=user, date=today).first()
+
+    # monthly data log heatmap
+    logged_dates = WaterIntake.objects.filter(user=user, date__month=current_month).dates("date", "day")
+    logged_dates_set = set(logged_dates)
+
+    # prepare data for heatmap
+    heatmap_data = defaultdict(lamda: 0)
+    for date in logged_dates:
+        day = date.day
+        heatmap_data[day] += 1
+
+    # creat the heatmap data for the current month
+        days_in_month = calendar.monthrange(today.year, current_month)[1]
+        heatmap_values = [heatmap_data[day] for day in range(1, days_in_month + 1)]
 
     # get workout history and current goals
 
@@ -68,7 +85,12 @@ def index(request):
 
     context = {
         "workout_history": workout_history,
-        "current_goals": current_goals
+        "current_goals": current_goals,
+        "graph": graph,
+        "daily_intake_ml": daily_intake_ml,
+        "today_emotion": today_emotion,
+        "heatmao_values": heatmap_values,
+        "days_in_month": days_in_month
     }
 
     return render(request, "index.html", context)
