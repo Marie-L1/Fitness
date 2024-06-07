@@ -65,7 +65,7 @@ def index(request):
     logged_dates_set = set(logged_dates)
 
     # prepare data for heatmap
-    heatmap_data = defaultdict(lamda: 0)
+    heatmap_data = defaultdict(lambda: 0)
     for date in logged_dates:
         day = date.day
         heatmap_data[day] += 1
