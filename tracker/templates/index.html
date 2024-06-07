@@ -59,8 +59,8 @@
         </div>
         <div class="card-body">
             <div class="d-flex flex-wrap" id="heatmap">
-                {% for day in heatmap_values %}
-                    <div class="p-2" style="width: 20px; height: 20px; background-color: rgba(167, 233, 236, {{ day|floatformat:1 }}); margin: 1px;"></div>
+                {% for day, color_value in zip(days, color_values) %}
+                    <div class="p-2" style="width: 20px; height: 20px; background-color: rgba(95, 172, 176, {{ color_value }}); margin: 1px;"></div>
                 {% endif %}
                 </div>
             </div>
