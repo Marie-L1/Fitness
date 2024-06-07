@@ -3,53 +3,35 @@
 {% block body %}
 
 <!--Put everything in a container-->
+<div class="container mt-4">
+
+    <!--Current Goal checklist-->
+    <div class="card md-4">
+        <div class="card-header">
+           <h3>Current Goals</h3> 
+        </div>
+        <div class="card-body">
+          <ul>
+            {% for goal in current_goals %}
+                <li clas="editable" data-goal-id="{{ goal.id }}">{{ goal.description }}</li>
+            {% endfor %}
+        </ul>  
+        </div>
+    </div>
+
+    <!--Daily Water Intake-->
 
 
-<!--Current Goal checklist-->
-<div>
-    <h3>Current Goals</h3>
-    <ul>
-        {% for goal in current_goals %}
-            <li clas="editable" data-goal-id="{{ goal.id }}">{{ goal.description }}</li>
-        {% endfor %}
-    </ul>
+    <!--Daily Emotion Logged for the day-->
+
+
+    <!--Monthly Date Log Heatmap-->
+
+
+
 </div>
-
-
-
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const goals = document.querySelectorAll(".editable");
-        goals.forEach((goal) => {
-            goal.addEventListener("click", () => {
-                const text = goal.innerText;
-                const input = document.createElement("input");
-                input.value = text;
-                goal.innerText = "";
-                goal.appendChild(input);
-                input.focus();
-                input.addEventListener("blur", () => {
-                    const newText = input.value;
-                    const goalId = goal.getAttribute("data-goal-id");
-                    fetch(`/edit_goal/${goalId}`, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-CSRFToken": "{{ csrf_token }}"
-                        },
-                        body: JSON.stringify({ description: newText })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        goal.innerText = data.description;
-                    })
-                    .catch(error => {
-                        console.error("Error:", error);
-                    });
-                });
-            });
-        });
-    });
+  
 </script>
 
 {% endblock %}
