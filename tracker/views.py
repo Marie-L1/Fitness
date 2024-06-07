@@ -28,13 +28,14 @@ def index(request):
     user = request.user
     today = timezone.now().date()
     current_month = timezone.now().month
+    current_month_name = calendar.month_name[current_month]
 
     # Goals
     current_goals = Goal.objects.filter(user=user, achieved=False)
 
     # water intake calculation 
     daily_intake = WaterIntake.objects.filter(user=user, date=today)
-    daily_intake_ml = daily_intake.aggregate(total_intake=Sum("amount_ml"))
+    daily_intake_ml = daily_intake.aggregate(total_intake=Sum("amount_ml"))["total_intake"] or 0
       
     # generate monthly graph
     monthly_intake = WaterIntake.objects.filter(user=user, date__year=today.year, date__month=current_month).values("date").annotate(total_intake=Sum("amount_ml"))
@@ -90,7 +91,8 @@ def index(request):
         "daily_intake_ml": daily_intake_ml,
         "today_emotion": today_emotion,
         "heatmao_values": heatmap_values,
-        "days_in_month": days_in_month
+        "days_in_month": days_in_month,
+        "current_month_name": current_month_name,
     }
 
     return render(request, "index.html", context)
