@@ -16,6 +16,7 @@ from collections import Counter
 import calendar
 from collections import defaultdict
 from datetime import datetime
+from numpy import np    # for array manipulation
 
 logger = logging.getLogger(__name__)
 
@@ -75,8 +76,13 @@ def index(request):
         days_in_month = calendar.monthrange(today.year, current_month)[1]
         heatmap_values = [heatmap_data[day] for day in range(1, days_in_month + 1)]
 
-    # get workout history and current goals
+    # calculate colour intensity values for heatmap
+    max_intensity = max(heatmap_values)
+    min_intensity = min(heatmap_values)
+    color_value = np.interp(heatmap_values (min_intensity, max_intensity), (0, 255)) # values range for RGB
+        
 
+    # get workout history and current goals
     if request.user.is_authenticated:
         workout_history = Workout.objects.filter(user=request.user)
         current_goals= Goal.objects.filter(user=request.user, achieved=False)
@@ -93,6 +99,7 @@ def index(request):
         "heatmao_values": heatmap_values,
         "days_in_month": days_in_month,
         "current_month_name": current_month_name,
+        "color_value": color_value,
     }
 
     return render(request, "index.html", context)
