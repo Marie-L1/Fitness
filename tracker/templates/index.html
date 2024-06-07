@@ -60,7 +60,7 @@
         <div class="card-body">
             <div class="d-flex flex-wrap" id="heatmap">
                 {% for day in heatmap_values %}
-                    <div class="p-2" style="width: 20px; height: 20px; background-color: rgb(167, 233, 236) {{ day|floatformat:1 }}); margin: 1px;">
+                    <div class="p-2" style="width: 20px; height: 20px; background-color: rgba(167, 233, 236, {{ day|floatformat:1 }}); margin: 1px;"></div>
                 {% endif %}
                 </div>
             </div>
