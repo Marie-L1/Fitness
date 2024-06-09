@@ -68,7 +68,32 @@
     </div>
 </div>
 <script>
-  
+  document.addEventListener("DOMContentLoaded", function() {
+    // editing and marking goals
+    document.querySelector('form').forEach(form => {
+        form.addEventListener('submit', function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            var goalId = this.getAttribute('data-goal-id');
+            fetch("{% url 'edit_goal 0 %'}".replace("0", goalId), {
+                method: "POST",
+                headers: {
+                    "X-Request-With": "XMLHttpRequest",
+                    "X-CSRFToken": formData.get('csrfmiddlewaretoken')
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.description) {
+                    this.querySelector('[name="desciption"]').value = data.description;
+                    this.querySelector('[name="is_complete"]').checked = data.achieved;
+                }
+            })
+            .catch(error => console.error('Error', error));
+        });
+     });
+  });
 </script>
 
 {% endblock %}
