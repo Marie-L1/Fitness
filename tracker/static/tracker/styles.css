@@ -22,3 +22,11 @@
 margin-top: 20px;
 text-align: center;
 }
+
+/* heat map */
+.mr-3 { 
+    width: 30px;
+    height: 20px;
+    background-color: rgba(167, 233, 235);
+    margin: 1px;
+}
