@@ -55,13 +55,13 @@
     <!--Monthly Date Log Heatmap-->
     <div class="card mb-4">
         <div class="card-header">
-            <h3>{{ current_month_name }}</h3> # make it so the month changes
+            <h3>{{ current_month_name }}</h3> 
         </div>
         <div class="card-body">
             <div class="d-flex flex-wrap" id="heatmap">
                 {% for entry in heatmap_data_list %}
                     <div class="p-2"></div>
-                {% endif %}
+                {% endfor %}
                 </div>
             </div>
         </div>
