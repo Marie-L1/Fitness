@@ -16,7 +16,7 @@ from collections import Counter
 import calendar
 from collections import defaultdict
 from datetime import datetime
-from numpy import np    # for array manipulation
+import numpy as np    # for array manipulation
 
 logger = logging.getLogger(__name__)
 
