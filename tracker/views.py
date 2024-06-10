@@ -226,7 +226,7 @@ def new_goal(request):
     return redirect("index")
 
 @login_required
-def toggle_goal(request, goal_id)
+def toggle_goal(request, goal_id):
     if request.method == "POST" and request.is_ajax():
         try:
             goal = Goal.objects.filter(pk=goal_id, user=request.user)
@@ -241,11 +241,15 @@ def toggle_goal(request, goal_id)
 
 def edit_goal(request, goal_id):
     if request.method == "POST" and request.is_ajax():
-        goal = Goal.objects.get(pk=goal_id)
-        new_description = request.POST.get("description")
-        goal.save()
-        return JsonResponse({"description": new_description})
-    return JsonResponse({"error": "Invalid request"})
+        try:
+            goal = Goal.objects.get(pk=goal_id, user=request.user)
+            new_description = json.loads(request.body).get("description")
+            goal.description = new_description
+            goal.save()
+            return JsonResponse({"success": True})
+        except Goal.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Goal not found."})
+    return JsonResponse({"success": False, "error": "Invalid request"})
 
 
 # calculate calories burned per minute of each activity type
