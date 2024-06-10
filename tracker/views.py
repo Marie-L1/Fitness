@@ -220,15 +220,10 @@ def user_profile(request):
 @login_required
 def new_goal(request):
     if request.method == "POST":
-        form = GoalForm(request.POST)
-        if form.is_valid():
-            goal = form.save(commit=False)
-            goal.user = request.user
-            goal.save()
-            return redirect("index")
-    else:
-        form = GoalForm()
-    return render(request, "new_goal.html", {"form":form})
+        description = request.POST.get("description")
+        if description:
+            Goal.objects.create(user=request.user, description=description)
+    return redirect("index")
 
 
 def edit_goal(request, goal_id):
