@@ -225,6 +225,19 @@ def new_goal(request):
             Goal.objects.create(user=request.user, description=description)
     return redirect("index")
 
+@login_required
+def toggle_goal(request, goal_id)
+    if request.method == "POST" and request.is_ajax():
+        try:
+            goal = Goal.objects.filter(pk=goal_id, user=request.user)
+            goal.achieved = not goal.achieved
+            goal.save()
+            return JsonResponse({"success": True})
+        except Goal.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Goal not found."})
+    return JsonResponse({"success": False, "error": "Invalid request."})
+
+
 
 def edit_goal(request, goal_id):
     if request.method == "POST" and request.is_ajax():
