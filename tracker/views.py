@@ -252,6 +252,18 @@ def edit_goal(request, goal_id):
     return JsonResponse({"success": False, "error": "Invalid request"})
 
 
+@login_required
+def delete_goal(request, goal_id):
+    if request.method == "POST" and request.is_ajax():
+        try:
+            goal = Goal.objects.get(pk=goal_id, user=request.user)
+            goal.delete()
+            return JsonResponse({"success": True})
+        except Goal.DoesNotExist:
+             return JsonResponse({"success": False, "error": "Goal not found."})
+    return JsonResponse({"success": False, "error": "Invalid request"})
+
+
 # calculate calories burned per minute of each activity type
 def calculated_calories_burned(activity_type, duration_minutes):
     calories_per_minute = {
