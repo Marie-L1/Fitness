@@ -14,24 +14,25 @@
             <form id="new_goal_form" method="POST" action="{% url 'new_goal' %}">
                 {% csrf_token %}
                 <div class="input-group mb-4">
-                    <input type="text" name="description" class="form-control" placeholder="new goal" required>
-                <button class="btn btn-primary" type="submit">Add Goal</button>
+                    <input type="text" name="description" class="form-control" placeholder="New goal" required>
+                    <button class="btn btn-primary" type="submit">Add Goal</button>
                 </div>
             </form>
-             <!--Current Goal checklist-->
-                <div class="card-body">
-                    <ul class="list-group">
-                        {% for goal in current_goals %}
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <input type="checkbox" name="form-check-input me-1" {% if goal.achieved %}checked{% endif %} data-goal-id="{{ goal.id }}">
-                            <span contenteditable="True" class="goal_description" data-goal-id="{{ goal.id }}">{{ goal.desciption }}</span>
-                        </div>
-                            <button type="submit" class="btn btn-sm btn-outline-secondary">Update</button>
-                         </li>
-                        {% endfor %}
-                    </ul>  
-                </div>
-         </div>
+            <!-- Current Goal checklist -->
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for goal in current_goals %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <input type="checkbox" class="form-check-input me-1" {% if goal.achieved %}checked{% endif %} data-goal-id="{{ goal.id }}">
+                        <span contenteditable="true" class="goal_description" data-goal-id="{{ goal.id }}">{{ goal.description }}</span>
+                        <button type="submit" class="btn btn-sm btn-outline-secondary">Update</button>
+                    </li>
+                    {% endfor %}
+                </ul>  
+            </div>
+        </div>
+    </div>
+    
 
                     
 
