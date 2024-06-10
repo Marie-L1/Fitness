@@ -74,12 +74,13 @@ def index(request):
 
     # creat the heatmap data for the current month
         days_in_month = calendar.monthrange(today.year, current_month)[1]
-        heatmap_values = [heatmap_data[day] for day in range(1, days_in_month + 1)]
+        heatmap_data_list = [heatmap_data[day] for day in range(1, days_in_month + 1)]
 
     # calculate colour intensity values for heatmap
-    max_intensity = max(heatmap_values)
-    min_intensity = min(heatmap_values)
-    color_value = np.interp(heatmap_values (min_intensity, max_intensity), (0, 255)) # values range for RGB
+    max_intensity = max(heatmap_data.values(), default=1)
+    for entry in heatmap_data_list:
+        entry["color_value"] = np.interp(entry["color_value"], [0, max_intensity], [0, 1])
+
         
 
     # get workout history and current goals
@@ -96,10 +97,9 @@ def index(request):
         "graph": graph,
         "daily_intake_ml": daily_intake_ml,
         "today_emotion": today_emotion,
-        "heatmao_values": heatmap_values,
+        "heatmap_data_list": heatmap_data_list,
         "days_in_month": days_in_month,
         "current_month_name": current_month_name,
-        "color_value": color_value,
     }
 
     return render(request, "index.html", context)
