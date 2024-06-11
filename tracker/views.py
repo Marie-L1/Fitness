@@ -225,7 +225,7 @@ def new_goal(request):
         if description:
             print(f"User: {request.user}, ID {request.user.id}")    #debugging
             user = request.user._wrapped if hasattr(request.user, "_wrapped") else request.user
-            Goal.objects.create(user=request.user, description=description)
+            Goal.objects.create(user=user, description=description)
     return redirect("index")
 
 
