@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import IntegrityError
 from django.db.models import Sum, Count, Avg
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -219,13 +219,15 @@ def user_profile(request):
 
 
 @login_required
-def new_goal(request):
+def new_goal(request: HttpResponse) -> HttpResponse:
     if request.method == "POST":
         description = request.POST.get("description")
         if description:
-            print(f"User: {request.user}, ID {request.user.id}")    #debugging
-            user = request.user._wrapped if hasattr(request.user, "_wrapped") else request.user
-            Goal.objects.create(user=user, description=description)
+            try:
+                user = User.objects.get(id=request.user.id)
+                Goal.objects.create(user=user, description=description)
+            except User.DoesNotExist:
+                print("User does not exist.")
     return redirect("index")
 
 
