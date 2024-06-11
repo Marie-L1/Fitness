@@ -11,20 +11,18 @@
     </head>
 
     <body>
-        <nav class="navbar fixed-top bg-body-tertiary">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
-              <a class="navbar-brand" href=""></a>
-
-              <h2>Fitness Tracker</h2>
-              <div>
+              <a class="navbar-brand" href="{% url 'tracker:index' %}">Personal Wellness Tracker</a>
+              <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+              </button>
+              <div class="collapse navbar-collapse" id="navbarNav">
                 {% if user.is_authenticated %}
                     Signed in as <strong>{{ user.username }}</strong>
-                    <ul class="navbar-brand">
+                    <ul class="navbar-nav">
                         <li class="nav_item">
                             <a class="nav-link" href="{% url 'tracker:index' %}">Homepage</a>
-                        </li>
-                        <li class="nav_item">
-                            <a class="nav-link" href="{% url 'tracker:new_goal' %}">Add Goals</a>
                         </li>
                         <li class="nav_item">
                             <a class="nav-link" href="{% url 'tracker:log_workout' %}">Log Workout</a>
@@ -36,7 +34,7 @@
                             <a class="nav-link" href="{% url 'tracker:mental_health' %}">Mental Health</a>
                         </li>
                         <li class="nav_item">
-                            <a class="nav-link" href="{% url 'tracker:mental_health_summary' %}">Past Mental Health Logs</a>
+                            <a class="nav-link" href="{% url 'tracker:mental_health_summary' %}">Mental Health Summary</a>
                         </li>
                         <li class="nav_item">
                             <a class="nav-link" href="{% url 'tracker:user_profile' %}">Profile</a>
