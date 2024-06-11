@@ -223,6 +223,7 @@ def new_goal(request):
     if request.method == "POST":
         description = request.POST.get("description")
         if description:
+            print(f"User: {request.user}, ID {request.user.id}")    #debugging
             Goal.objects.create(user=request.user, description=description)
     return redirect("index")
 

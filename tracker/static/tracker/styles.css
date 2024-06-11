@@ -23,6 +23,10 @@ margin-top: 20px;
 text-align: center;
 }
 
+.signed_in_as {
+    margin-left: 500px;
+}
+
 /* heat map */
 .p-2 { 
     width: 30px;
@@ -30,3 +34,4 @@ text-align: center;
     background-color: rgba(167, 233, 235);
     margin: 1px;
 }
+
