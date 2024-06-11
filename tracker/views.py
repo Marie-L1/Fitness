@@ -226,6 +226,7 @@ def new_goal(request):
             Goal.objects.create(user=request.user, description=description)
     return redirect("index")
 
+
 @login_required
 def toggle_goal(request, goal_id):
     if request.method == "POST" and request.is_ajax():

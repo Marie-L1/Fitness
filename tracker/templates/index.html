@@ -11,7 +11,7 @@
             <h3>Goals</h3>
         </div>
         <div class="card-body">
-            <form id="new_goal_form" method="POST" action="{% url 'new_goal' %}">
+            <form id="new_goal_form" method="POST" action="{% url 'tracker:new_goal' %}">
                 {% csrf_token %}
                 <div class="input-group mb-4">
                     <input type="text" name="description" class="form-control" placeholder="New goal" required>
