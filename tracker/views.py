@@ -3,7 +3,7 @@ from django.db import IntegrityError
 from django.db.models import Sum, Count, Avg
 from django.http import HttpResponseRedirect, JsonResponse, HttpResponse, HttpRequest
 from django.urls import reverse
-from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
@@ -20,6 +20,7 @@ import numpy as np    # for array manipulation
 import json
 
 logger = logging.getLogger(__name__)
+User = get_user_model()
 
 from .models import User, Workout, Goal, WaterIntake, Emotion, SelfCareHabit, EnergyLevel, DailyGratitude, Rant
 from .forms import WorkoutForm, GoalForm, WaterIntakeForm, EmotionForm, SelfCareHabitForm, EnergyLevelForm, DailyGratitudeForm, RantForm, RegistrationForm
@@ -80,8 +81,6 @@ def index(request):
     max_intensity = max(heatmap_data.values(), default=1)
     for entry in heatmap_data_list:
         entry["color_value"] = np.interp(entry["color_value"], [0, max_intensity], [0, 1])
-
-        
 
     # get workout history and current goals
     if request.user.is_authenticated:
@@ -151,70 +150,78 @@ def register(request):
         form = RegistrationForm()
     return render(request, "register.html", {"form": form})
 
-
 @login_required
 def user_profile(request):
-    user = request.user
-    past_workouts = Workout.objects.filter(user=user).order_by("-date")
+    try:
+        # Force evaluation of SimpleLazyObject
+        user = User.objects.get(id=request.user.id)
+        print(f"User: {user}, ID: {user.id}")  # Debugging output
 
-    current_month = timezone.now().month
-    emotions = Emotion.objects.filter(user=request.user, date__month=current_month)
-    emotion_counts = emotions.values("emotion").annotate(count=Count("emotion"))
+        past_workouts = Workout.objects.filter(user=user).order_by("-date")
 
-    # prepare the data for the pie chart of emotions
-    emotion_data = {entry["emotion"]: entry["count"] for entry in emotion_counts}
+        current_month = timezone.now().month
+        emotions = Emotion.objects.filter(user=user, date__month=current_month)
+        emotion_counts = emotions.values("emotion").annotate(count=Count("emotion"))
 
-    # create the monthly pie chart
-    labels = emotion_data.keys()
-    sizes = emotion_data.values()
-    colors = ["#ff9999", "#66b3ff", "#99ff99", "#ffcc99"]
+        # Prepare the data for the pie chart of emotions
+        emotion_data = {entry["emotion"]: entry["count"] for entry in emotion_counts}
 
-    fig1, ax1 = plt.subplots()
-    ax1.pie(sizes, labels=labels, autopct="%1.1f%%", startangle=90, colors=colors)
-    ax1.axis("equal") # equal ratio so the pie chart is a circle
+        # Create the monthly pie chart
+        labels = emotion_data.keys()
+        sizes = emotion_data.values()
+        colors = ["#ff9999", "#66b3ff", "#99ff99", "#ffcc99"]
 
-    # save the plot to a png image
-    buffer = BytesIO()
-    plt.savefig(buffer, format="png")
-    plt.close(fig1)
-    buffer.seek(0)
-    image_png = buffer.getvalue()
-    buffer.close()
-    emotion_chart = base64.b64encode(image_png).decode("utf-8")
+        fig1, ax1 = plt.subplots()
+        ax1.pie(sizes, labels=labels, autopct="%1.1f%%", startangle=90, colors=colors)
+        ax1.axis("equal")  # Equal ratio so the pie chart is a circle
 
-    # Water intake monthly graph
-    water_intake = WaterIntake.objects.filter(user=request.user, date__month=current_month)
+        # Save the plot to a png image
+        buffer = BytesIO()
+        plt.savefig(buffer, format="png")
+        plt.close(fig1)
+        buffer.seek(0)
+        image_png = buffer.getvalue()
+        buffer.close()
+        emotion_chart = base64.b64encode(image_png).decode("utf-8")
 
-    daily_water_intake = water_intake.values("date").annotate(total_amount=Sum("amount_ml")).order_by("date")
+        # Water intake monthly graph
+        water_intake = WaterIntake.objects.filter(user=user, date__month=current_month)
+        daily_water_intake = water_intake.values("date").annotate(total_amount=Sum("amount_ml")).order_by("date")
 
-    # prep data for the graph
-    dates = [entry["date"] for entry in daily_water_intake]
-    amounts = [entry["total_amount"] for entry in daily_water_intake]
+        # Prepare data for the graph
+        dates = [entry["date"] for entry in daily_water_intake]
+        amounts = [entry["total_amount"] for entry in daily_water_intake]
 
-    # lines for graph
-    fig2, ax2 = plt.subplot()
-    ax2.plot(dates, amounts, marker="o")
-    ax2.set_x_label("Date")
-    ax2.set_ylabel("Monthly Water Intake")
-    plt.xticks(rotation=45)
+        # Lines for graph
+        fig2, ax2 = plt.subplots()
+        ax2.plot(dates, amounts, marker="o")
+        ax2.set_xlabel("Date")
+        ax2.set_ylabel("Monthly Water Intake")
+        plt.xticks(rotation=45)
 
-    # save plots as png image
-    buffer = BytesIO
-    plt.savefig(buffer, format="png")
-    plt.close(fig2)
-    buffer.seek(0)
-    image_png = buffer.getvalue()
-    buffer.close()
-    water_intake_chart = base64.b64encode(image_png).decode("utf-8")
+        # Save plots as png image
+        buffer = BytesIO()
+        plt.savefig(buffer, format="png")
+        plt.close(fig2)
+        buffer.seek(0)
+        image_png = buffer.getvalue()
+        buffer.close()
+        water_intake_chart = base64.b64encode(image_png).decode("utf-8")
 
-    context = {
-        "user": user,
-        "past_workouts": past_workouts,
-        "emotion_chart": emotion_chart,
-        "water_intake_chart": water_intake_chart,
+        context = {
+            "user": user,
+            "past_workouts": past_workouts,
+            "emotion_chart": emotion_chart,
+            "water_intake_chart": water_intake_chart,
+        }
 
-    }
-    return render(request, "user_profile.html", context)
+        return render(request, "tracker/user_profile.html", context)
+    except User.DoesNotExist:
+        print("User does not exist")
+        return redirect('login')
+    except Exception as e:
+        print(f"Unexpected error: {e}")
+        return redirect('index')
 
 
 @login_required
