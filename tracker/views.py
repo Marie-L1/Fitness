@@ -157,9 +157,6 @@ def register(request):
     return render(request, "register.html", {"form": form})
 
 
-
-
-
 @login_required(login_url='/tracker/login/')
 def user_profile(request):
     try:
@@ -401,7 +398,7 @@ def mental_health_summary(request):
     emotions = Emotion.objects.filter(user=request.user, date__month=timezone.now().month)
     daily_gratitude = DailyGratitude.objects.filer(user=request.user, date__month=timezone.now().month)
     self_care_habits = SelfCareHabit.objects.filter(user=request.user, date__month=timezone.now().month)
-    energy_levels = EnergyLevel.objects.filer(user=request.user, date__month=timezone.now().month)
+    energy_levels = EnergyLevel.objects.filter(user=request.user, date__month=timezone.now().month)
     rants = Rant.objects.filter(user=request.user, date__month=timezone.now().month)
 
     # data for pie chart and graph
