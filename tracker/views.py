@@ -147,12 +147,15 @@ def register(request):
                 return HttpResponseRedirect(reverse("index"))
             else:
                 logger.error("User could not be authenticated after registration.")
+                return render(request, "register.html", {"form": form, "message": "User could not be authenticated."})
         else:
             logger.error(f"Form errors: {form.errors}")
+            return render(request, "register.html", {"form": form, "message": form.errors})
     else:
         form = RegistrationForm()
     
     return render(request, "register.html", {"form": form})
+
 
 
 
