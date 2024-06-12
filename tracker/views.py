@@ -135,17 +135,23 @@ def register(request):
     if request.method == "POST":
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save()
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data["password1"])
+            user.save()
             username = user.username
             password = form.cleaned_data.get("password1")
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
+                logger.debug(f"User {username} registered and logged in.")
                 return HttpResponseRedirect(reverse("index"))
+            else:
+                logger.error("User could not be authenticated after registration.")
         else:
-            return render(request, "register.html", {"form": form})
+            logger.error(f"Form errors: {form.errors}")
     else:
         form = RegistrationForm()
+    
     return render(request, "register.html", {"form": form})
 
 
