@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.db import IntegrityError
 from django.db.models import Sum, Count, Avg
-from django.http import HttpResponseRedirect, JsonResponse, HttpResponse
+from django.http import HttpResponseRedirect, JsonResponse, HttpResponse, HttpRequest
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -23,7 +23,6 @@ logger = logging.getLogger(__name__)
 
 from .models import User, Workout, Goal, WaterIntake, Emotion, SelfCareHabit, EnergyLevel, DailyGratitude, Rant
 from .forms import WorkoutForm, GoalForm, WaterIntakeForm, EmotionForm, SelfCareHabitForm, EnergyLevelForm, DailyGratitudeForm, RantForm, RegistrationForm
-
 
 
 def index(request):
@@ -219,15 +218,25 @@ def user_profile(request):
 
 
 @login_required
-def new_goal(request: HttpResponse) -> HttpResponse:
+def new_goal(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
         description = request.POST.get("description")
         if description:
+            print(f"Request user: {request.user} (Type: {type(request.user)})")
+            print(f"Request user ID: {request.user.id}")
+
             try:
+                # Retrieve the user instance
                 user = User.objects.get(id=request.user.id)
+                print(f"Retrieved user: {user} (Type: {type(user)})")
+
+                # Create the goal
                 Goal.objects.create(user=user, description=description)
             except User.DoesNotExist:
-                print("User does not exist.")
+                print("User does not exist")
+            except Exception as e:
+                print(f"Unexpected error: {e}")
+
     return redirect("index")
 
 
