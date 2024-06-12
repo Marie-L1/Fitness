@@ -150,6 +150,7 @@ def register(request):
         form = RegistrationForm()
     return render(request, "register.html", {"form": form})
 
+
 @login_required
 def user_profile(request):
     try:
