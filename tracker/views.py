@@ -27,7 +27,8 @@ from .forms import WorkoutForm, GoalForm, WaterIntakeForm, EmotionForm, SelfCare
 
 
 def index(request):
-    user = request.user
+    user = User.objects.get(id=request.user)
+    print(f"User: {user}, ID: {user.id}")   # debugging
     today = timezone.now().date()
     current_month = timezone.now().month
     current_month_name = calendar.month_name[current_month]
@@ -118,10 +119,11 @@ def login_view(request):
             login(request, user)
             logger.debug("login successful")
             return HttpResponseRedirect(reverse("index"))
+        else:
+            logger.warning(f"Invalid username and/or password.")
+            return render(request, "login.html", {"message": "Invalid username and/or password."})
     else:
-        logger.warning(f"Invalid username and/or password.")
-        return render(request, "login.html", {"message": "Invalid username and/or password."})
-    return render(request, "login.html")
+        return render(request, "login.html")
 
 
 def logout_view(request):
@@ -131,24 +133,22 @@ def logout_view(request):
 
 def register(request):
     if request.method == "POST":
-        logger.debug("Registration attempt")
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            logger.debug("Form is valid")
             user = form.save()
             username = user.username
             password = form.cleaned_data.get("password1")
             user = authenticate(request, username=username, password=password)
             if user is not None:
                 login(request, user)
-                logger.debug("User authentication failed after registration.")
                 return HttpResponseRedirect(reverse("index"))
         else:
-            logger.warning(f"Form is not valid.")
             return render(request, "register.html", {"form": form})
     else:
         form = RegistrationForm()
     return render(request, "register.html", {"form": form})
+
+
 
 
 @login_required
