@@ -118,12 +118,13 @@ def login_view(request):
         if user is not None:
             login(request, user)
             logger.debug("login successful")
-            return HttpResponseRedirect(reverse("index"))
+            return HttpResponseRedirect(reverse("tracker:index"))
         else:
             logger.warning(f"Invalid username and/or password.")
-            return render(request, "login.html", {"message": "Invalid username and/or password."})
+            return render(request, "tracker:login.html", {"message": "Invalid username and/or password."})
     else:
-        return render(request, "login.html")
+        return render(request, "tracker:login.html")
+
 
 @login_required(login_url='/tracker/login/')
 def logout_view(request):
