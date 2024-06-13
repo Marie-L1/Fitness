@@ -157,7 +157,7 @@ def register(request):
     return render(request, "register.html", {"form": form})
 
 
-@login_required(login_url='tracker:login')
+@login_required(login_url='/tracker/login/')
 def user_profile(request):
     try:
         # Force evaluation of SimpleLazyObject
@@ -231,7 +231,7 @@ def user_profile(request):
         return redirect('index')
 
 
-@login_required(login_url='tracker:login')
+@login_required(login_url='/tracker/login/')
 def new_goal(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
         description = request.POST.get("description")
@@ -254,7 +254,7 @@ def new_goal(request: HttpRequest) -> HttpResponse:
     return redirect("index")
 
 
-@login_required(login_url='tracker:login')
+@login_required(login_url='/tracker/login/')
 def toggle_goal(request, goal_id):
     if request.method == "POST" and request.is_ajax():
         try:
@@ -267,7 +267,7 @@ def toggle_goal(request, goal_id):
     return JsonResponse({"success": False, "error": "Invalid request."})
 
 
-@login_required(login_url='tracker:login')
+@login_required(login_url='/tracker/login/')
 def edit_goal(request, goal_id):
     if request.method == "POST" and request.is_ajax():
         try:
@@ -281,7 +281,7 @@ def edit_goal(request, goal_id):
     return JsonResponse({"success": False, "error": "Invalid request"})
 
 
-@login_required(login_url='tracker:login')
+@login_required(login_url='/tracker/login/')
 def delete_goal(request, goal_id):
     if request.method == "POST" and request.is_ajax():
         try:
@@ -310,7 +310,7 @@ def calculated_calories_burned(activity_type, duration_minutes):
         return None
 
 
-@login_required(login_url='tracker:login')
+@login_required(login_url='/tracker/login/')
 def log_workout(request):
     if request.method == "POST":
         form = WorkoutForm(request.POST)
@@ -324,7 +324,7 @@ def log_workout(request):
     return render(request, "log_workout.html", {"form": form})
 
 
-@login_required(login_url='tracker:login')
+@login_required(login_url='/tracker/login/')
 def delete_workout(request, workout_id):
     workout = get_object_or_404(Workout, pk=workout_id) 
     if request.method == "POST":
@@ -333,7 +333,7 @@ def delete_workout(request, workout_id):
     return redirect("user_profile")    
 
 
-@login_required(login_url='tracker:login')
+@login_required(login_url='/tracker/login/')
 def edit_workout(request, workout_id):
     workout = get_object_or_404(Workout, pk=workout_id)
     if request.method == "POST":
@@ -347,7 +347,7 @@ def edit_workout(request, workout_id):
 
 
 
-@login_required(login_url='tracker:login')
+@login_required(login_url='/tracker/login/')
 def water_intake(request):
     if request.method == "POST":
         form = WaterIntakeForm(request.POST)
@@ -359,7 +359,7 @@ def water_intake(request):
         return render(request, "water_intake.html", {"form": form})
     
 
-@login_required(login_url='tracker:login')
+@login_required(login_url='/tracker/login/')
 def mental_health(request):
     if request.method == "POST":
         form_name = request.POST.get("form_name")
@@ -394,7 +394,7 @@ def mental_health(request):
     })
 
 
-@login_required(login_url='tracker:login')
+@login_required(login_url='/tracker/login/')
 def mental_health_summary(request):
     emotions = Emotion.objects.filter(user=request.user, date__month=timezone.now().month)
     daily_gratitude = DailyGratitude.objects.filer(user=request.user, date__month=timezone.now().month)
