@@ -7,10 +7,10 @@ from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
-from django.db.models import Count
+from django.db.models import Count, Sum
 import matplotlib.pyplot as plt
 import base64
-from io import BytesIO
+from io import BytesIO, StringIO
 import logging
 from collections import Counter
 import calendar
@@ -105,7 +105,6 @@ def index(request):
     return render(request, "index.html", context)
 
 
-
 def login_view(request):
     if request.method == "POST":
         # Attempt to sign user in
@@ -159,59 +158,8 @@ def register(request):
 
 
 @login_required(login_url='/tracker/login/')
-def mental_health_summary(request):
-    emotions = Emotion.objects.filter(user=request.user, date__month=timezone.now().month)
-    daily_gratitude = DailyGratitude.objects.filter(user=request.user, date__month=timezone.now().month)
-    self_care_habits = SelfCareHabit.objects.filter(user=request.user, date__month=timezone.now().month)
-    energy_levels = EnergyLevel.objects.filter(user=request.user, date__month=timezone.now().month)
-    rants = Rant.objects.filter(user=request.user, date__month=timezone.now().month)
+def user_profile(request):
 
-    # data for pie chart and graph
-    emotion_counts = emotions.values("emotion").annotate(count=Count("emotion"))
-    avg_energy_level = energy_levels.aggregate(avg_level=Avg("energy_level"))["avg_level"]
-
-    # generate pie chart for emotions
-    labels = [entry["emotion"] for entry in emotion_counts]
-    sizes = [entry["count"] for entry in emotion_counts]
-
-    fig1, ax1 = plt.subplots()
-    ax1.pie(sizes, lables=labels, autopct="%1.1f%%", startangle=90)
-    ax1.axis("equal")
-
-    # save pie chart to png image
-    buffer = BytesIO()
-    plt.savefig(buffer, format="png")
-    emotion_chart = base64.b64encoded(buffer.getvalue()).decode("utf-8")
-    buffer.close()
-
-    # create the line graph for energy levels
-    dates = [entry["date"] for entry in energy_levels]
-    levels = [entry["energy_level"] for entry in energy_levels]
-
-    plt.figure()
-    plt.plot(dates, levels)
-    plt.xlabel("Date")
-    plt.ylabel("Daily Energy Level")
-    plt.grid(True)
-
-    # Save the line graph to png image
-    buffer = BytesIO()
-    plt.savefig(buffer, format="png")
-    buffer.seek(0)
-    energy_level_chart = base64.b64encode(buffer.getvalue()).decode("utf-8")
-    buffer.close()
-
-    return render(request, "mental_health_summary.html", {
-        "emotions": emotions,
-        "daily_gratitude": daily_gratitude,
-        "self_care_habits": self_care_habits,
-        "energy_levels": energy_levels,
-        "rants": rants,
-        "emotion_counts": emotion_counts,
-        "avg_energy_level": avg_energy_level,
-        "emotion_chart": emotion_chart,
-        "energy_level_chart": energy_level_chart
-    })
 
 @login_required(login_url='/tracker/login/')
 def new_goal(request: HttpRequest) -> HttpResponse:
