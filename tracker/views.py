@@ -332,7 +332,7 @@ def mental_health(request):
            mental_health_entry.save()
            return redirect("tracker:mental_health_summary")
     else:
-       form = MentalHealthForm()
+        form = MentalHealthForm()
        
     return render(request, "tracker/mental_health.html", {"form": form})
            

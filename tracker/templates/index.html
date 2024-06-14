@@ -2,10 +2,10 @@
 
 {% block body %}
 
-<!--Put everything in a container-->
+<!-- Put everything in a container -->
 <div class="container mt-4">
 
-    <!--Adding goals-->
+    <!-- Adding goals -->
     <div class="card mb-4">
         <div class="card-header">
             <h3>Goals</h3>
@@ -25,18 +25,15 @@
                     <li class="list-group-item d-flex justify-content-between align-items-center">
                         <input type="checkbox" class="form-check-input me-1" {% if goal.achieved %}checked{% endif %} data-goal-id="{{ goal.id }}">
                         <span contenteditable="true" class="goal_description" data-goal-id="{{ goal.id }}">{{ goal.description }}</span>
-                        <button type="submit" class="btn btn-sm btn-outline-secondary">Update</button>
+                        <button type="button" class="btn btn-sm btn-outline-secondary update-goal-btn" data-goal-id="{{ goal.id }}">Update</button>
                     </li>
                     {% endfor %}
                 </ul>  
             </div>
         </div>
     </div>
-    
 
-                    
-
-    <!--Daily Water Intake-->
+    <!-- Daily Water Intake -->
     <div class="card mb-4">
         <div class="card-header">
             <h3>Daily Water Intake</h3>
@@ -46,64 +43,63 @@
         </div>
     </div>
 
-
-    <!--Daily Emotion Logged for the day-->
+    <!-- Today's Emotion -->
     <div class="card mb-4">
         <div class="card-header">
             <h3>Today's Emotion</h3>
         </div>
         <div class="card-body">
             {% if today_emotion %}
-                <p>{{ today_emotion.emotion }}</p>
+                <p>{{ today_emotion }}</p>
             {% else %}
                 <p>No emotion logged today.</p>
             {% endif %}
         </div>
     </div>
 
-
-    <!--Monthly Date Log Heatmap-->
+    <!-- Monthly Date Log Heatmap -->
     <div class="card mb-4">
         <div class="card-header">
-            <h3>{{ current_month_name }}</h3> 
+            <h3>{{ current_month_name }}</h3>
         </div>
         <div class="card-body">
             <div class="d-flex flex-wrap" id="heatmap">
                 {% for entry in heatmap_data_list %}
                     <div class="p-2"></div>
                 {% endfor %}
-                </div>
             </div>
         </div>
     </div>
+
 </div>
+
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    // editing and marking goals
-    document.querySelector('form').forEach(form => {
-        form.addEventListener('submit', function(event) {
-            event.preventDefault();
-            var formData = new FormData(this);
-            var goalId = this.getAttribute('data-goal-id');
-            fetch("{% url 'edit_goal 0 %'}".replace("0", goalId), {
-                method: "POST",
-                headers: {
-                    "X-Request-With": "XMLHttpRequest",
-                    "X-CSRFToken": formData.get('csrfmiddlewaretoken')
-                },
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.description) {
-                    this.querySelector('[name="desciption"]').value = data.description;
-                    this.querySelector('[name="is_complete"]').checked = data.achieved;
-                }
-            })
-            .catch(error => console.error('Error', error));
+    document.addEventListener("DOMContentLoaded", function() {
+        // Update goal functionality
+        const updateGoalButtons = document.querySelectorAll('.update-goal-btn');
+        updateGoalButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const goalId = this.getAttribute('data-goal-id');
+                const description = document.querySelector(`.goal_description[data-goal-id="${goalId}"]`).textContent.trim();
+                const achieved = document.querySelector(`input[data-goal-id="${goalId}"]`).checked;
+
+                fetch(`/tracker/edit_goal/${goalId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: JSON.stringify({ description: description, achieved: achieved })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Goal updated successfully:', data);
+                    // Optionally update UI to reflect the changes
+                })
+                .catch(error => console.error('Error updating goal:', error));
+            });
         });
-     });
-  });
+    });
 </script>
 
 {% endblock %}
