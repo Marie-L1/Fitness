@@ -22,7 +22,7 @@ import json
 logger = logging.getLogger(__name__)
 User = get_user_model()
 
-from .models import User, Workout, Goal, WaterIntake
+from .models import User, Workout, Goal, WaterIntake, MentalHealth
 from .forms import WorkoutForm, GoalForm, WaterIntakeForm, RegistrationForm, MentalHealthForm
 
 
@@ -289,37 +289,17 @@ def water_intake(request):
 
 @login_required(login_url='/tracker/login/')
 def mental_health(request):
-    if request.method == "POST":
-        form_name = request.POST.get("form_name")
-
-        if form_name == "emotion":
-            form = EmotionForm(request.POST)
-        elif form_name == "daily_gratitude":
-            form = DailyGratitudeForm(request.POST)
-        elif form_name == "self_care_habit":
-            form = SelfCareHabitForm(request.POST)
-        elif form_name == "energy_level":
-            form = EnergyLevelForm(request.POST)
-
-        if form.is_valid():
-            instance = form.save(commit=False)
-            instance.user = request.user
-            form.save()
-            return redirect("index")
+   if request.method == "POST":
+       form = MentalHealthForm(request.POST)
+       if form.is_valid():
+           mental_health_entry = form.save(commit=False)
+           mental_health_entry.user = request.user
+           mental_health_entry.save()
+           return redirect("tracker:mental_health_summary")
     else:
-        emotion_form = EmotionForm()
-        daily_gratitude_form  = DailyGratitudeForm()
-        self_care_habit_form = SelfCareHabitForm()
-        energy_level_form = EnergyLevelForm()
-        rant_form = RantForm()
-
-    return render(request, "mental_health.html", {
-        "emotion_form": emotion_form,
-        "daily_gratitude_form": daily_gratitude_form,
-        "self_care_habit_form": self_care_habit_form,
-        "energy_level_form": energy_level_form,
-        "rant_form": rant_form
-    })
+       form = MentalHealthForm
+    return render(request, "tracker/mental_health.html", {"form": form})
+           
 
 
 @login_required(login_url='/tracker/login/')
