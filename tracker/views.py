@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect, JsonResponse, HttpResponse, HttpRe
 from django.urls import reverse
 from django.contrib.auth import authenticate, login, logout, get_user_model
 from django.contrib.auth.decorators import login_required
+from django.contrib import messages
 from django.utils import timezone
 from django.contrib.auth.forms import UserCreationForm
 from django.db.models import Count, Sum
@@ -96,7 +97,18 @@ def index(request):
 @login_required(login_url='/tracker/login/')
 def login_view(request):
     if request.method == "POST":
-        username = request.POST.get()
+        username = request.POST.get("username")
+        password = request.POST.get("password")
+
+        user = authenticate(request, username=username, password=password)
+
+        if user is not None:
+            login(request, user)
+            return redirect("tracker:index")
+        else:
+            messages.error(request, "Invalid username or password.")
+        
+    return render(request, "tracker/login.html")
 
 @login_required(login_url='/tracker/login/')
 def logout_view(request):
