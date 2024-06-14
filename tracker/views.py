@@ -159,6 +159,70 @@ def register(request):
 
 @login_required(login_url='/tracker/login/')
 def user_profile(request):
+    try:
+        # get current user
+        user = request.User
+        print(f"User: {user}, ID: {user.id}")   # debugging
+
+        past_workouts = Workout.objects.filter(user=user).order_by("-date")
+
+        # get current month's emotions and prepare data for the pie chart
+        current_month = timezone.now().month
+        emotions = MentalHealth.objects.filter(user=user, date__month=current_month)
+        emotion_counts = emotions.values("entry").annotate(count=Count("entry"))
+
+        # Prepare data for the emotions pie chart
+        emotion_data = {entry["entry"]: entry["count"] for entry in emotion_counts}
+        labels = list(emotion_data.keys())
+        sizes = list(emotion_data.values())
+        colors = ["#ff9999", "#66b3ff", "#99ff99", "#ffcc99"]
+
+        fig1, ax1 = plt.subplots()
+        ax1.pie(sizes, labels=labels, autopct="%1.1f%%", startangle=90, colors=colors)
+        ax1.axis("equal")  # Equal ratio so the pie chart is a circle
+
+        # Save the emotions pie chart to a png image
+        buffer1 = BytesIO()
+        plt.savefig(buffer1, format="png")
+        plt.close(fig1)
+        buffer1.seek(0)
+        emotion_chart = base64.b64encode(buffer1.getvalue()).decode("utf-8")
+        buffer1.close()
+
+        # get monthly water intake data and prepare for the graph
+        water_intake = WaterIntake.objects.filter(user=user, date__month=current_month)
+        daily_water_intake = water_intake.values("date").annotate(total_amount=Count("amount_ml").order_by("date"))
+
+        dates = [entry["date"] for entry in daily_water_intake]
+        amounts = [entry["total_amount"] for entry in daily_water_intake]
+
+        fig2, ax2 = plt.subplots()
+        ax2.plot(dates, amounts, marker="o")
+        ax2.set_xlabel("Date")
+        ax2.set_ylabel("Monthly Water Intake")
+        plt.xticks(rotation=45)
+
+        # Save the water intake graph to a png image
+        buffer2 = BytesIO()
+        plt.savefig(buffer2, format="png")
+        plt.close(fig2)
+        buffer2.seek(0)
+        water_intake_chart = base64.b64encode(buffer2.getvalue()).decode("utf-8")
+        buffer2.close()
+
+        context = {
+            "user": user,
+            "past_workouts": past_workouts,
+            "emotion_chart": emotion_chart,
+            "water_intake_chart": water_intake_chart,
+        }
+
+        return render(request, "tracker/user_profile.html", context)
+    
+    except Exception as e:
+        print(f"Error in user_profile views : {e}")
+        return redirect("tracker:index")
+
 
 
 @login_required(login_url='/tracker/login/')
