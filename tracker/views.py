@@ -26,21 +26,23 @@ from .models import User, Workout, Goal, WaterIntake, MentalHealth
 from .forms import WorkoutForm, GoalForm, WaterIntakeForm, RegistrationForm, MentalHealthForm
 
 
+@login_required(login_url='/tracker/login/')
 def index(request):
-    user = User.objects.get(id=request.user)
-    print(f"User: {user}, ID: {user.id}")   # debugging
-    today = timezone.now().date()
-    current_month = timezone.now().month
-    current_month_name = calendar.month_name[current_month]
+    user = request.user
+    print(f"User: {user}, ID: {user.id}")   # Debugging
 
-    # Goals
+    today = datetime.now().date()
+    current_month = datetime.now().month
+    current_month_name = datetime.now().strftime('%B')
+
+    # Fetching current goals (if any)
     current_goals = Goal.objects.filter(user=user, achieved=False)
 
-    # water intake calculation 
+    # Fetching daily water intake
     daily_intake = WaterIntake.objects.filter(user=user, date=today)
     daily_intake_ml = daily_intake.aggregate(total_intake=Sum("amount_ml"))["total_intake"] or 0
-      
-    # generate monthly graph
+
+    # Generating monthly water intake graph
     monthly_intake = WaterIntake.objects.filter(user=user, date__year=today.year, date__month=current_month).values("date").annotate(total_intake=Sum("amount_ml"))
     dates = [entry["date"] for entry in monthly_intake]
     intake_values = [entry["total_intake"] for entry in monthly_intake]
@@ -51,45 +53,32 @@ def index(request):
     plt.title("Monthly Water Intake")
     plt.grid(True)
 
-    # convert the plots to image
+    # Convert the plot to image
     buffer = BytesIO()
     plt.savefig(buffer, format="png")
     buffer.seek(0)
     image_png = buffer.getvalue()
     buffer.close()
-    # embed image into HTML
     graph = base64.b64encode(image_png).decode("utf-8")
     plt.close()
 
-    # daily emotion logged for today
-    today_emotion = Emotion.objects.filter(user=user, date=today).first()
+    # Fetching daily emotion logged for today
+    today_emotion_entry = MentalHealth.objects.filter(user=user, date=today).first()
+    today_emotion = today_emotion_entry.emotion if today_emotion_entry else None
 
-    # monthly data log heatmap
+    # Generating heatmap data for the current month
     logged_dates = WaterIntake.objects.filter(user=user, date__month=current_month).dates("date", "day")
-    logged_dates_set = set(logged_dates)
-
-    # prepare data for heatmap
-    heatmap_data = defaultdict(lambda: 0)
+    heatmap_data = {date.day: 0 for date in logged_dates}
     for date in logged_dates:
         day = date.day
         heatmap_data[day] += 1
 
-    # creat the heatmap data for the current month
-        days_in_month = calendar.monthrange(today.year, current_month)[1]
-        heatmap_data_list = [heatmap_data[day] for day in range(1, days_in_month + 1)]
-
-    # calculate colour intensity values for heatmap
+    # Normalize heatmap data for color intensity
     max_intensity = max(heatmap_data.values(), default=1)
-    for entry in heatmap_data_list:
-        entry["color_value"] = np.interp(entry["color_value"], [0, max_intensity], [0, 1])
+    heatmap_data_list = [{'day': day, 'color_value': heatmap_data[day] / max_intensity} for day in range(1, today.day + 1)]
 
-    # get workout history and current goals
-    if request.user.is_authenticated:
-        workout_history = Workout.objects.filter(user=request.user)
-        current_goals= Goal.objects.filter(user=request.user, achieved=False)
-    else:
-        workout_history = None
-        current_goals = None
+    # Fetching workout history
+    workout_history = Workout.objects.filter(user=user)
 
     context = {
         "workout_history": workout_history,
@@ -98,31 +87,10 @@ def index(request):
         "daily_intake_ml": daily_intake_ml,
         "today_emotion": today_emotion,
         "heatmap_data_list": heatmap_data_list,
-        "days_in_month": days_in_month,
         "current_month_name": current_month_name,
     }
 
     return render(request, "index.html", context)
-
-
-def login_view(request):
-    if request.method == "POST":
-        # Attempt to sign user in
-        logger.debug("login attempt")
-        username = request.POST["username"]
-        password = request.POST["password"]
-        user = authenticate(request, username=username, password=password)
-
-        # Check if authentication successful
-        if user is not None:
-            login(request, user)
-            logger.debug("login successful")
-            return HttpResponseRedirect(reverse("tracker:index"))
-        else:
-            logger.warning(f"Invalid username and/or password.")
-            return render(request, "login.html", {"message": "Invalid username and/or password."})
-    else:
-        return render(request, "login.html")
 
 
 @login_required(login_url='/tracker/login/')
@@ -155,6 +123,7 @@ def register(request):
         form = RegistrationForm()
     
     return render(request, "register.html", {"form": form})
+
 
 
 @login_required(login_url='/tracker/login/')
