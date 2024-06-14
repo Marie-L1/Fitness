@@ -81,47 +81,11 @@ class WaterIntake(models.Model):
         return(f"{self.user.username}'s water intake on {self.date}")
     
 
-# mental health section
-    
-class Emotion(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="emotions")
+class MentalHealth(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="mental_health_entries")
     date = models.DateField()
-    emotion = models.CharField(max_length=100)
-
-    def __str__(self):
-        return f"{self.user.username}'s emotion on {self.date}"
-    
-
-class DailyGratitude(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="gratitude_entries")
-    date = models.DateField()
-    entry = models.TextField(max_length=500)
-
-    def __str__(self):
-        return f"{self.user.username}'s gratitude entery on {self.date}"
-    
-
-class SelfCareHabit(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="self_care_habits")
-    habit = models.CharField(max_length=100)
-
-    def __str__(self):
-        return self.habit
-    
-
-class EnergyLevel(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="energy_levels")
-    date = models.DateField()
-    level = models.IntegerField()
-
-    def __str__(self):
-        return f"{self.user.username}'s energy level on {self.date}"
-    
-
-class Rant(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="rants")
-    date = models.DateField(auto_now_add=True)
-    rant = models.TextField()
-
-    def __str__(self):
-        return f"Rant by {self.user.username} on {self.date}"
+    emotion = models.CharField(max_length=100, blank=True, null=True)
+    daily_gratitude = models.TextField(max_length=500, blank=True, null=True)
+    self_care_habit = models.CharField(max_length=100, blank=True, null=True)
+    energy_level = models.IntegerField(blank=True, null=True)
+    rant = models.TextField(max_length=500, blank=True, null=True)

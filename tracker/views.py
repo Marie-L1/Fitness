@@ -22,8 +22,8 @@ import json
 logger = logging.getLogger(__name__)
 User = get_user_model()
 
-from .models import User, Workout, Goal, WaterIntake, Emotion, SelfCareHabit, EnergyLevel, DailyGratitude, Rant
-from .forms import WorkoutForm, GoalForm, WaterIntakeForm, EmotionForm, SelfCareHabitForm, EnergyLevelForm, DailyGratitudeForm, RantForm, RegistrationForm
+from .models import User, Workout, Goal, WaterIntake
+from .forms import WorkoutForm, GoalForm, WaterIntakeForm, RegistrationForm, MentalHealthForm
 
 
 def index(request):
@@ -157,78 +157,6 @@ def register(request):
     
     return render(request, "register.html", {"form": form})
 
-
-@login_required(login_url='/tracker/login/')
-def user_profile(request):
-    try:
-        # Force evaluation of SimpleLazyObject
-        user = request.user
-        print(f"User: {user}, ID: {user.id}")  # Debugging output
-
-        past_workouts = Workout.objects.filter(user=user).order_by("-date")
-        current_month = timezone.now().month
-        emotions = Emotion.objects.filter(user=user, date__month=current_month)
-        emotion_counts = emotions.values("emotion").annotate(count=Count("emotion"))
-
-        # Prepare the data for the pie chart of emotions
-        emotion_data = {entry["emotion"]: entry["count"] for entry in emotion_counts}
-
-        # Create the monthly pie chart
-        labels = emotion_data.keys()
-        sizes = emotion_data.values()
-        colors = ["#ff9999", "#66b3ff", "#99ff99", "#ffcc99"]
-
-        fig1, ax1 = plt.subplots()
-        ax1.pie(sizes, labels=labels, autopct="%1.1f%%", startangle=90, colors=colors)
-        ax1.axis("equal")  # Equal ratio so the pie chart is a circle
-
-        # Save the plot to a png image
-        buffer = BytesIO()
-        plt.savefig(buffer, format="png")
-        plt.close(fig1)
-        buffer.seek(0)
-        image_png = buffer.getvalue()
-        buffer.close()
-        emotion_chart = base64.b64encode(image_png).decode("utf-8")
-
-        # Water intake monthly graph
-        water_intake = WaterIntake.objects.filter(user=user, date__month=current_month)
-        daily_water_intake = water_intake.values("date").annotate(total_amount=Sum("amount_ml")).order_by("date")
-
-        # Prepare data for the graph
-        dates = [entry["date"] for entry in daily_water_intake]
-        amounts = [entry["total_amount"] for entry in daily_water_intake]
-
-        # Lines for graph
-        fig2, ax2 = plt.subplots()
-        ax2.plot(dates, amounts, marker="o")
-        ax2.set_xlabel("Date")
-        ax2.set_ylabel("Monthly Water Intake")
-        plt.xticks(rotation=45)
-
-        # Save plots as png image
-        buffer = BytesIO()
-        plt.savefig(buffer, format="png")
-        plt.close(fig2)
-        buffer.seek(0)
-        image_png = buffer.getvalue()
-        buffer.close()
-        water_intake_chart = base64.b64encode(image_png).decode("utf-8")
-
-        context = {
-            "user": user,
-            "past_workouts": past_workouts,
-            "emotion_chart": emotion_chart,
-            "water_intake_chart": water_intake_chart,
-        }
-
-        return render(request, "tracker/user_profile.html", context)
-    except User.DoesNotExist:
-        print("User does not exist")
-        return redirect('tracker:login')
-    except Exception as e:
-        print(f"Unexpected error: {e}")
-        return redirect('tracker:index')
 
 
 @login_required(login_url='/tracker/login/')
