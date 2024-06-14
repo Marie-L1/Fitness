@@ -21,20 +21,14 @@
     <h2>Logged Mental Health</h2>
     {% if mental_health_logs %}
     {% for log in mental_health_logs %}
-    <div class="mental-health-log-container">
+    <div class="mental-health-log-container" id="log-{{ log.id }}">
         <p>Date: {{ log.date }}</p>
         <p>Emotion: {{ log.emotion }}</p>
         <p>Self-Care Habit: {{ log.self_care_habit }}</p>
         <p>Daily Gratitude: {{ log.daily_gratitude }}</p>
 
-        <form action="{% url 'edit_mental_health' log.id %}" method="post">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-link">Edit</button>
-        </form>
-        <form action="{% url 'delete_mental_health' log.id %}" method="post">
-            {% csrf_token %}
-            <button type="submit" class="btn btn-link">Delete</button>
-        </form>
+        <button type="button" class="btn btn-link edit-log" data-log-id="{{ log.id }}">Edit</button>
+        <button type="button" class="btn btn-link delete-log" data-log-id="{{ log.id }}">Delete</button>
     </div>
     {% empty %}
     <p>No mental health logs available.</p>
@@ -58,14 +52,8 @@
             {% if workout.calories_burned %}
             <p class="card-text">Calories Burned: {{ workout.calories_burned }}</p>
             {% endif %}
-            <form action="{% url 'edit_workout' workout.id %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-link">Edit</button>
-            </form>
-            <form action="{% url 'delete_workout' workout.id %}" method="post">
-                {% csrf_token %}
-                <button type="submit" class="btn btn-link">Delete</button>
-            </form>
+            <button type="button" class="btn btn-link edit-workout" data-workout-id="{{ workout.id }}">Edit</button>
+            <button type="button" class="btn btn-link delete-workout" data-workout-id="{{ workout.id }}">Delete</button>
         </div>
     </div>
     {% endfor %}
@@ -73,5 +61,51 @@
     <p>No workouts logged.</p>
     {% endif %}
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Edit log functionality
+    const editLogButtons = document.querySelectorAll('.edit-log');
+    editLogButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const logId = button.getAttribute('data-log-id');
+            // Redirect or open modal for editing log with logId
+            window.location.href = `/edit-mental-health/${logId}`;  // Example URL, adjust as per your URL pattern
+        });
+    });
+
+    // Delete log functionality
+    const deleteLogButtons = document.querySelectorAll('.delete-log');
+    deleteLogButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const logId = button.getAttribute('data-log-id');
+            if (confirm('Are you sure you want to delete this log?')) {
+                // Perform AJAX delete request or redirect to delete view with logId
+                window.location.href = `/delete-mental-health/${logId}`;  // Example URL, adjust as per your URL pattern
+            }
+        });
+    });
+
+    // Edit workout functionality (similar logic)
+    const editWorkoutButtons = document.querySelectorAll('.edit-workout');
+    editWorkoutButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const workoutId = button.getAttribute('data-workout-id');
+            window.location.href = `/edit-workout/${workoutId}`;  // Example URL, adjust as per your URL pattern
+        });
+    });
+
+    // Delete workout functionality (similar logic)
+    const deleteWorkoutButtons = document.querySelectorAll('.delete-workout');
+    deleteWorkoutButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const workoutId = button.getAttribute('data-workout-id');
+            if (confirm('Are you sure you want to delete this workout?')) {
+                window.location.href = `/delete-workout/${workoutId}`;  // Example URL, adjust as per your URL pattern
+            }
+        });
+    });
+});
+</script>
 
 {% endblock %}
