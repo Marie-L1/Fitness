@@ -121,9 +121,9 @@ def login_view(request):
             return HttpResponseRedirect(reverse("tracker:index"))
         else:
             logger.warning(f"Invalid username and/or password.")
-            return render(request, "tracker:login.html", {"message": "Invalid username and/or password."})
+            return render(request, "login.html", {"message": "Invalid username and/or password."})
     else:
-        return render(request, "tracker:login.html")
+        return render(request, "login.html")
 
 
 @login_required(login_url='/tracker/login/')
@@ -162,11 +162,10 @@ def register(request):
 def user_profile(request):
     try:
         # Force evaluation of SimpleLazyObject
-        user = User.objects.get(id=request.user.id)
+        user = request.user
         print(f"User: {user}, ID: {user.id}")  # Debugging output
 
         past_workouts = Workout.objects.filter(user=user).order_by("-date")
-
         current_month = timezone.now().month
         emotions = Emotion.objects.filter(user=user, date__month=current_month)
         emotion_counts = emotions.values("emotion").annotate(count=Count("emotion"))
@@ -226,10 +225,10 @@ def user_profile(request):
         return render(request, "tracker/user_profile.html", context)
     except User.DoesNotExist:
         print("User does not exist")
-        return redirect('login')
+        return redirect('tracker:login')
     except Exception as e:
         print(f"Unexpected error: {e}")
-        return redirect('index')
+        return redirect('tracker:index')
 
 
 @login_required(login_url='/tracker/login/')
@@ -398,7 +397,7 @@ def mental_health(request):
 @login_required(login_url='/tracker/login/')
 def mental_health_summary(request):
     emotions = Emotion.objects.filter(user=request.user, date__month=timezone.now().month)
-    daily_gratitude = DailyGratitude.objects.filer(user=request.user, date__month=timezone.now().month)
+    daily_gratitude = DailyGratitude.objects.filter(user=request.user, date__month=timezone.now().month)
     self_care_habits = SelfCareHabit.objects.filter(user=request.user, date__month=timezone.now().month)
     energy_levels = EnergyLevel.objects.filter(user=request.user, date__month=timezone.now().month)
     rants = Rant.objects.filter(user=request.user, date__month=timezone.now().month)
@@ -433,7 +432,7 @@ def mental_health_summary(request):
 
     # Save the line graph to png image
     buffer = BytesIO()
-    plt.savefit(buffer, format="png")
+    plt.savefig(buffer, format="png")
     buffer.seek(0)
     energy_level_chart = base64.b64encode(buffer.getvalue()).decode("utf-8")
     buffer.close()
