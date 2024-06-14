@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function() {
             const logId = button.getAttribute('data-log-id');
             // Redirect or open modal for editing log with logId
-            window.location.href = `/edit-mental-health/${logId}`;  // Example URL, adjust as per your URL pattern
+            window.location.href = `/edit_mental_health_log`;  // Example URL, adjust as per your URL pattern
         });
     });
 
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const logId = button.getAttribute('data-log-id');
             if (confirm('Are you sure you want to delete this log?')) {
                 // Perform AJAX delete request or redirect to delete view with logId
-                window.location.href = `/delete-mental-health/${logId}`;  // Example URL, adjust as per your URL pattern
+                window.location.href = `/delete_mental_health_log`;  // Example URL, adjust as per your URL pattern
             }
         });
     });
@@ -91,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
     editWorkoutButtons.forEach(button => {
         button.addEventListener('click', function() {
             const workoutId = button.getAttribute('data-workout-id');
-            window.location.href = `/edit-workout/${workoutId}`;  // Example URL, adjust as per your URL pattern
+            window.location.href = `/edit_workout`;  // Example URL, adjust as per your URL pattern
         });
     });
 
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function() {
         button.addEventListener('click', function() {
             const workoutId = button.getAttribute('data-workout-id');
             if (confirm('Are you sure you want to delete this workout?')) {
-                window.location.href = `/delete-workout/${workoutId}`;  // Example URL, adjust as per your URL pattern
+                window.location.href = `/delete_workout`;  // Example URL, adjust as per your URL pattern
             }
         });
     });
