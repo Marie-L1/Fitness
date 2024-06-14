@@ -349,7 +349,7 @@ def mental_health_summary(request):
     emotions = mental_health_entries("emotion").annotate(count=Count("emotion"))
     daily_gratitude = mental_health_entries("date", "daily_graitiude")
     self_care_habits = mental_health_entries("date", "self_care_habit")
-    energy_levels = mental_health_entries("date": "energy_level")
+    energy_levels = mental_health_entries("date", "energy_level")
     rants = mental_health_entries("date", "rant")
 
     # data for pie chart and graph
