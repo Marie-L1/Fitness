@@ -5,24 +5,27 @@ from .models import Goal, Workout, WaterIntake, MentalHealth
 
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField()
+
     class Meta:
         model = User
         fields = ["username", "email", "password1", "password2"]
 
     def clean_email(self):
         email = self.cleaned_data["email"]
-        if User.objects.filer(email=email).exists():
+        if User.objects.filter(email=email).exists():
             raise forms.ValidationError("Email is already in use.")
         return email
-        
+
     def clean(self):
         cleaned_data = super().clean()
         password1 = cleaned_data.get("password1")
         password2 = cleaned_data.get("password2")
 
-        if password1 != password2:
+        if password1 and password2 and password1 != password2:
             raise forms.ValidationError("Passwords do not match.")
-        return cleaned_data     
+
+        return cleaned_data
+   
 
 
 class GoalForm(forms.ModelForm):

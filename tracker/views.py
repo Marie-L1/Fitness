@@ -94,6 +94,11 @@ def index(request):
 
 
 @login_required(login_url='/tracker/login/')
+def login_view(request):
+    if request.method == "POST":
+        username = request.POST.get()
+
+@login_required(login_url='/tracker/login/')
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
