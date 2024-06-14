@@ -6,60 +6,71 @@
 <div class="container">
     <h2>Monthly Water Intake</h2>
     <div id="water-intake-chart-container">
-        <!--Monthly graph-->
-       <img scr="data:image/png;base64.{{ water_intake_chart}}" alt="Water Intake Chart">
+        <img src="data:image/png;base64,{{ water_intake_chart }}" alt="Water Intake Chart">
     </div>
 </div>
 
 <div class="container">
     <h2>Monthly Emotions</h2>
     <div id="mental-health-log-container">
-        <!--Pie chart-->
-        <img scr="data:image/png;base64,{{ emotion_chart }}" alt="Emotion Chart">
+        <img src="data:image/png;base64,{{ emotion_chart }}" alt="Emotion Chart">
     </div>
 </div>
 
 <div class="container">
     <h2>Logged Mental Health</h2>
-    {% for log in mental_health_log %}
+    {% if mental_health_logs %}
+    {% for log in mental_health_logs %}
     <div class="mental-health-log-container">
         <p>Date: {{ log.date }}</p>
-        <p>Emotion: {{ emotion_form.as_p }}</p>
-        <p>Self-Care Habit: {{ self_care_form.as_p }}</p>
-        <p>Daily Graitude: {{ gratitude_form.as_p }}</p>
+        <p>Emotion: {{ log.emotion }}</p>
+        <p>Self-Care Habit: {{ log.self_care_habit }}</p>
+        <p>Daily Gratitude: {{ log.daily_gratitude }}</p>
 
-        <a href="{% url 'edit_mental_health_log' log.id %}" method="post">Edit</a>
-        <form action="{% url 'delete_mental_health_log' log.id %}" method="post">
+        <form action="{% url 'edit_mental_health' log.id %}" method="post">
             {% csrf_token %}
-            <button type="submit">Delete</button>
+            <button type="submit" class="btn btn-link">Edit</button>
+        </form>
+        <form action="{% url 'delete_mental_health' log.id %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-link">Delete</button>
         </form>
     </div>
+    {% empty %}
+    <p>No mental health logs available.</p>
+    {% endfor %}
+    {% else %}
+    <p>No mental health logs available.</p>
+    {% endif %}
 </div>
 
 <div class="container">
     <h2>Past Workouts</h2>
-    {% if past_workout %}
-        {% for workout in past_workouts %}
-        <div class="card mb-3">
-            <div class="card-header">
-                {{ workout.date }}
-            </div>
-            <div>
-                <p class="card-title">Exercise: {{ workout.exercise }}</p>
-                <p class="card-text">Duration: {{ workout.duration_minutes }} minutes</p>
-                {% if workout.calories_burned %}
-                    <p class="card-text">Calories Burned: {{ workout.calories_burned }}</p>
-                {% endif %}
-                <a href="{% url 'tracker:edit_workout' workout.id %}">Edit</a>
-                <form action="{% url 'tracker:delete_workout' %}" method="POST">
-                    {% csrf_token %}
-                    <button type="submit">Delete</button>
-                </form>
-            </div>
+    {% if past_workouts %}
+    {% for workout in past_workouts %}
+    <div class="card mb-3">
+        <div class="card-header">
+            {{ workout.date }}
         </div>
-        {% endfor %}
+        <div class="card-body">
+            <p class="card-title">Exercise: {{ workout.exercise }}</p>
+            <p class="card-text">Duration: {{ workout.duration_minutes }} minutes</p>
+            {% if workout.calories_burned %}
+            <p class="card-text">Calories Burned: {{ workout.calories_burned }}</p>
+            {% endif %}
+            <form action="{% url 'edit_workout' workout.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-link">Edit</button>
+            </form>
+            <form action="{% url 'delete_workout' workout.id %}" method="post">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-link">Delete</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
     {% else %}
-        <p>No workouts logged.</p>
+    <p>No workouts logged.</p>
     {% endif %}
 </div>
 
