@@ -11,7 +11,7 @@
            <h2>Monthly Emotions</h2> 
         </div>
         <div class="card-body">
-            <img src="data:image/png;base64,{{ emotion_chart }}" alt="Emotions Pie Chart" class="img=fluid">
+            <img src="data:image/png;base64,{{ emotion_chart }}" alt="Emotions Pie Chart" class="img-fluid">
         </div>
     </div>
 
@@ -61,7 +61,7 @@
         </div>
         <div class="card-body">
             <ul>
-                {% for rants in rants %}
+                {% for rant in rants %}
                     <li>{{ rant.date }}: {{ rant.rant }}</li>
                 {% endfor %}
             </ul>
