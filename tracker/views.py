@@ -324,17 +324,18 @@ def water_intake(request):
 
 @login_required(login_url='/tracker/login/')
 def mental_health(request):
-   if request.method == "POST":
-       form = MentalHealthForm(request.POST)
-       if form.is_valid():
-           mental_health_entry = form.save(commit=False)
-           mental_health_entry.user = request.user
-           mental_health_entry.save()
-           return redirect("tracker:mental_health_summary")
+    if request.method == "POST":
+        form = MentalHealthForm(request.POST)
+        if form.is_valid():
+            mental_health_entry = form.save(commit=False)
+            mental_health_entry.user = request.user
+            mental_health_entry.save()
+            return redirect("tracker:mental_health_summary")
     else:
         form = MentalHealthForm()
-       
+        
     return render(request, "tracker/mental_health.html", {"form": form})
+
            
 
 
