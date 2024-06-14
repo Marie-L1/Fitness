@@ -158,6 +158,60 @@ def register(request):
     return render(request, "register.html", {"form": form})
 
 
+@login_required(login_url='/tracker/login/')
+def mental_health_summary(request):
+    emotions = Emotion.objects.filter(user=request.user, date__month=timezone.now().month)
+    daily_gratitude = DailyGratitude.objects.filter(user=request.user, date__month=timezone.now().month)
+    self_care_habits = SelfCareHabit.objects.filter(user=request.user, date__month=timezone.now().month)
+    energy_levels = EnergyLevel.objects.filter(user=request.user, date__month=timezone.now().month)
+    rants = Rant.objects.filter(user=request.user, date__month=timezone.now().month)
+
+    # data for pie chart and graph
+    emotion_counts = emotions.values("emotion").annotate(count=Count("emotion"))
+    avg_energy_level = energy_levels.aggregate(avg_level=Avg("energy_level"))["avg_level"]
+
+    # generate pie chart for emotions
+    labels = [entry["emotion"] for entry in emotion_counts]
+    sizes = [entry["count"] for entry in emotion_counts]
+
+    fig1, ax1 = plt.subplots()
+    ax1.pie(sizes, lables=labels, autopct="%1.1f%%", startangle=90)
+    ax1.axis("equal")
+
+    # save pie chart to png image
+    buffer = BytesIO()
+    plt.savefig(buffer, format="png")
+    emotion_chart = base64.b64encoded(buffer.getvalue()).decode("utf-8")
+    buffer.close()
+
+    # create the line graph for energy levels
+    dates = [entry["date"] for entry in energy_levels]
+    levels = [entry["energy_level"] for entry in energy_levels]
+
+    plt.figure()
+    plt.plot(dates, levels)
+    plt.xlabel("Date")
+    plt.ylabel("Daily Energy Level")
+    plt.grid(True)
+
+    # Save the line graph to png image
+    buffer = BytesIO()
+    plt.savefig(buffer, format="png")
+    buffer.seek(0)
+    energy_level_chart = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    buffer.close()
+
+    return render(request, "mental_health_summary.html", {
+        "emotions": emotions,
+        "daily_gratitude": daily_gratitude,
+        "self_care_habits": self_care_habits,
+        "energy_levels": energy_levels,
+        "rants": rants,
+        "emotion_counts": emotion_counts,
+        "avg_energy_level": avg_energy_level,
+        "emotion_chart": emotion_chart,
+        "energy_level_chart": energy_level_chart
+    })
 
 @login_required(login_url='/tracker/login/')
 def new_goal(request: HttpRequest) -> HttpResponse:
@@ -304,22 +358,24 @@ def mental_health(request):
 
 @login_required(login_url='/tracker/login/')
 def mental_health_summary(request):
-    emotions = Emotion.objects.filter(user=request.user, date__month=timezone.now().month)
-    daily_gratitude = DailyGratitude.objects.filter(user=request.user, date__month=timezone.now().month)
-    self_care_habits = SelfCareHabit.objects.filter(user=request.user, date__month=timezone.now().month)
-    energy_levels = EnergyLevel.objects.filter(user=request.user, date__month=timezone.now().month)
-    rants = Rant.objects.filter(user=request.user, date__month=timezone.now().month)
+    current_month = timezone.now().month
+
+    #filter the entries for the current user and the current month
+    mental_health_entries = MentalHealth.objects.filter(user=request.user, date__month=current_month)
+
+    # get data for each field
+    emotions = mental_health_entries("emotion").annotate(count=Count("emotion"))
+    daily_gratitude = mental_health_entries("date", "daily_graitiude")
+    self_care_habits = mental_health_entries("date", "self_care_habit")
+    energy_levels = mental_health_entries("date": "energy_level")
+    rants = mental_health_entries("date", "rant")
 
     # data for pie chart and graph
-    emotion_counts = emotions.values("emotion").annotate(count=Count("emotion"))
-    avg_energy_level = energy_levels.aggregate(avg_level=Avg("energy_level"))["avg_level"]
-
-    # generate pie chart for emotions
-    labels = [entry["emotion"] for entry in emotion_counts]
-    sizes = [entry["count"] for entry in emotion_counts]
+    emotion_labels = [entry["emotion"] for entry in emotions]
+    emotion_sizes = [entry["count"] for entry in emotions]
 
     fig1, ax1 = plt.subplots()
-    ax1.pie(sizes, lables=labels, autopct="%1.1f%%", startangle=90)
+    ax1.pie(emotion_sizes, lables=emotion_labels, autopct="%1.1f%%", startangle=90)
     ax1.axis("equal")
 
     # save pie chart to png image
@@ -351,8 +407,6 @@ def mental_health_summary(request):
         "self_care_habits": self_care_habits,
         "energy_levels": energy_levels,
         "rants": rants,
-        "emotion_counts": emotion_counts,
-        "avg_energy_level": avg_energy_level,
         "emotion_chart": emotion_chart,
         "energy_level_chart": energy_level_chart
     })
