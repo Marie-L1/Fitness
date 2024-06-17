@@ -32,7 +32,7 @@ def index(request):
     return render(request, "index.html")
 
 
-def generate_water_intake_graph(user):
+def generate_water_intake_graph(user, month):
     today = datetime.now().date()
     current_month = datetime.now().month
 
