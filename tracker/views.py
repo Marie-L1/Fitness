@@ -60,17 +60,18 @@ def generate_water_intake_graph(user, month):
 
 
 def generate_heatmap_data(user):
-    current_month = datetime.now().month
+    current_month = timezone.now().month
+    
+    # Fetching water intake data for the current month
     logged_dates = WaterIntake.objects.filter(user=user, date__month=current_month).dates("date", "day")
+    
+    # Initialize heatmap data dictionary
     heatmap_data = {date.day: 0 for date in logged_dates}
-    for date in logged_dates:
-        day = date.day
-        heatmap_data[day] += 1
-
+    
     # Normalize heatmap data for color intensity
     max_intensity = max(heatmap_data.values(), default=1)
-    heatmap_data_list = [{'day': day, 'color_value': heatmap_data[day] / max_intensity} for day in range(1, timezone.now().day + 1)]
-
+    heatmap_data_list = [{'day': day, 'color_value': heatmap_data.get(day, 0) / max_intensity} for day in range(1, timezone.now().day + 1)]
+    
     return heatmap_data_list
 
 
@@ -167,9 +168,9 @@ def homepage(request):
     user = request.user
     print(f"User: {user}, ID: {user.id}")   # Debugging
 
-    today = datetime.now().date()
-    current_month = datetime.now().month
-    current_month_name = datetime.now().strftime('%B')
+    today = timezone.now().date()
+    current_month = timezone.now().month
+    current_month_name = timezone.now().strftime('%B')
 
     # Fetching current goals (if any)
     current_goals = Goal.objects.filter(user=user, achieved=False)
@@ -185,7 +186,7 @@ def homepage(request):
     today_emotion_entry = MentalHealth.objects.filter(user=user, date=today).first()
     today_emotion = today_emotion_entry.emotion if today_emotion_entry else None
 
-    # Generate heatmap data
+    # Generating heatmap data for the current month
     heatmap_data_list = generate_heatmap_data(user)
 
     # Fetching workout history
@@ -201,9 +202,9 @@ def homepage(request):
         "current_month_name": current_month_name,
     }
 
-    return render(request, "homepage.html", context)
- 
+    return render(request, "tracker/homepage.html", context)
 
+ 
 @login_required(login_url='/tracker/login/')
 def user_profile(request):
     try:
