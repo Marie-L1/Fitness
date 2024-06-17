@@ -2,9 +2,108 @@
 <!--Index page if the user is signed in-->
 
 {% block body %}
-<div>
-    
+
+<!-- Put everything in a container -->
+<div class="container mt-4">
+
+    <!-- Adding goals -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Goals</h3>
+        </div>
+        <div class="card-body">
+            <form id="new_goal_form" method="POST" action="{% url 'tracker:new_goal' %}">
+                {% csrf_token %}
+                <div class="input-group mb-4">
+                    <input type="text" name="description" class="form-control" placeholder="New goal" required>
+                    <button class="btn btn-primary" type="submit">Add Goal</button>
+                </div>
+            </form>
+            <!-- Current Goal checklist -->
+            <div class="card-body">
+                <ul class="list-group">
+                    {% for goal in current_goals %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <input type="checkbox" class="form-check-input me-1" {% if goal.achieved %}checked{% endif %} data-goal-id="{{ goal.id }}">
+                        <span contenteditable="true" class="goal_description" data-goal-id="{{ goal.id }}">{{ goal.description }}</span>
+                        <button type="button" class="btn btn-sm btn-outline-secondary update-goal-btn" data-goal-id="{{ goal.id }}">Update</button>
+                    </li>
+                    {% endfor %}
+                </ul>  
+            </div>
+        </div>
+    </div>
+
+    <!-- Daily Water Intake -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Daily Water Intake</h3>
+        </div>
+        <div class="card-body">
+            <p>Total Intake Today: {{ daily_intake_ml }} ml </p>
+        </div>
+    </div>
+
+    <!-- Today's Emotion -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>Today's Emotion</h3>
+        </div>
+        <div class="card-body">
+            {% if today_emotion %}
+                <p>{{ today_emotion }}</p>
+            {% else %}
+                <p>No emotion logged today.</p>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Monthly Date Log Heatmap -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h3>{{ current_month_name }}</h3>
+        </div>
+        <div class="card-body">
+            <div class="d-flex flex-wrap" id="heatmap">
+                {% for entry in heatmap_data_list %}
+                    <div class="p-2" style="background-color: rgba(255, 0, 0, {{ entry.color_value }}); width: 30px; height: 30px; margin: 2px;"></div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
 </div>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Get CSRF token
+        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+        // Update goal functionality
+        const updateGoalButtons = document.querySelectorAll('.update-goal-btn');
+        updateGoalButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const goalId = this.getAttribute('data-goal-id');
+                const description = document.querySelector(`.goal_description[data-goal-id="${goalId}"]`).textContent.trim();
+                const achieved = document.querySelector(`input[data-goal-id="${goalId}"]`).checked;
+
+                fetch(`/tracker/edit_goal/${goalId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({ description: description, achieved: achieved })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Goal updated successfully:', data);
+                    // Optionally update UI to reflect the changes
+                })
+                .catch(error => console.error('Error updating goal:', error));
+            });
+        });
+    });
+</script>
 
 {% endblock %}
