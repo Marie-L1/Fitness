@@ -233,6 +233,7 @@ def user_profile(request):
         return redirect("tracker:index")
     
 
+
 @login_required(login_url='/tracker/login/')
 def mental_health_summary(request):
     try:
@@ -249,6 +250,7 @@ def mental_health_summary(request):
         rants = mental_health_entries.values("date", "rant")
 
         # Example charts generation (using mock functions)
+        # Replace with your actual chart generation functions
         emotion_chart = generate_emotion_chart(request.user)
         energy_level_chart = generate_energy_level_graph(request.user)
 
@@ -259,7 +261,8 @@ def mental_health_summary(request):
             "energy_levels": energy_levels,
             "rants": rants,
             "emotion_chart": emotion_chart,
-            "energy_level_chart": energy_level_chart
+            "energy_level_chart": energy_level_chart,
+            "mental_health_entries": mental_health_entries  # Pass the queryset for any additional processing in the template
         }
 
         return render(request, "mental_health_summary.html", context)
@@ -399,19 +402,16 @@ def water_intake(request):
 
 @login_required(login_url='/tracker/login/')
 def mental_health(request):
-    if request.method == "POST":
+    if request.method == 'POST':
         form = MentalHealthForm(request.POST)
         if form.is_valid():
             mental_health_entry = form.save(commit=False)
             mental_health_entry.user = request.user
             mental_health_entry.save()
-            return redirect("tracker:mental_health_summary")
-        else:
-            # Handle form errors if necessary
-            print(form.errors)  # Print errors to console for debugging
+            return redirect('tracker:mental_health_summary')
     else:
         form = MentalHealthForm()
-        
-    return render(request, "mental_health_summary.html", {"form": form})
+    
+    return render(request, 'mental_health.html', {'form': form})
 
            

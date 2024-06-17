@@ -99,11 +99,12 @@ class WaterIntakeForm(forms.ModelForm):
         
 
 # mental health section
-class MentalHealthForm(forms.Form):
-    model = MentalHealth
-    fields = ["date", "emotion", "daily_gratitude", "self_care_habit", "energy_level", "rant"]
-    widgets = {
-        "date": forms.DateInput(attrs={"type": "date"}),
-        "daily_graitude": forms.Textarea(attrs={"rows": 10}),
-        "rant": forms.Textarea(attrs={"rows": 20}),
-    }
+class MentalHealthForm(forms.ModelForm):
+    class Meta:
+        model = MentalHealth
+        fields = ["date", "emotion", "daily_gratitude", "self_care_habit", "energy_level", "rant"]
+        widgets = {
+            "date": forms.DateInput(attrs={"type": "date"}),
+            "daily_graitude": forms.Textarea(attrs={"rows": 10}),
+            "rant": forms.Textarea(attrs={"rows": 20}),
+        }

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 """
 
 from pathlib import Path
+import matplotlib
 
 import os
 
@@ -74,6 +75,8 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'fitness.wsgi.application'
+
+matplotlib.use('Agg')  # Use Agg backend which is non-interactive and suitable for web
 
 
 # Database
