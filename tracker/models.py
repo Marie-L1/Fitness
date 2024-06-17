@@ -11,8 +11,8 @@ class User(AbstractUser):
         app_label = "tracker"
         db_table = "tracker_user"
 
-    groups = None
-    user_permissions = None
+    # groups = None
+    # user_permissions = None
 
 
 class Workout(models.Model):

@@ -7,7 +7,7 @@ class RegistrationForm(UserCreationForm):
     email = forms.EmailField()
 
     class Meta:
-        model = User
+        model = User  # Use the custom User model
         fields = ["username", "email", "password1", "password2"]
 
     def clean_email(self):
@@ -25,8 +25,8 @@ class RegistrationForm(UserCreationForm):
             raise forms.ValidationError("Passwords do not match.")
 
         return cleaned_data
-   
 
+   
 
 class GoalForm(forms.ModelForm):
     class Meta:

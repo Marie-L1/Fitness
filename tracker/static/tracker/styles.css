@@ -8,7 +8,7 @@
 }
 
 body {
-    background: url("images/background_image.jpg");
+    background: url("/static/tracker/background_image.jpg/");
     background-size: cover;
     background-repeat: no-repeat;
     background-attachment: fixed;
