@@ -406,9 +406,12 @@ def mental_health(request):
             mental_health_entry.user = request.user
             mental_health_entry.save()
             return redirect("tracker:mental_health_summary")
+        else:
+            # Handle form errors if necessary
+            print(form.errors)  # Print errors to console for debugging
     else:
         form = MentalHealthForm()
         
-    return render(request, "mental_health.html", {"form": form})
+    return render(request, "mental_health_summary.html", {"form": form})
 
            
