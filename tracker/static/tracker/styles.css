@@ -37,6 +37,7 @@ body {
 
 .navbar-nav {
     flex-direction: column;
+    list-style-type: none;
 }
 
 
@@ -47,7 +48,47 @@ body {
 
 .nav-link {
     text-align: center;
+    text-decoration: none;
+    font-weight: 500;
+    color: #fff;
+    padding-bottom: 15px;
+    margin: 0 25px;
 }
+
+.nav-link:hover, .active {
+    border-bottom: 2px solid #fff;
+
+}
+
+.nav-button .btn{
+    width: 130px;
+    height: 40px;
+    font-weight: 500;
+    background:  rgba(255, 255, 255, 0.4);
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    transition: .3s ease;
+}   
+
+.btn:hover {
+    background: rgba(255, 255, 255, 0.3)
+}
+
+#registerBtn {
+    margin-left: 15px;
+}
+
+.btn.white-btn {
+    background: rgba(255, 255, 255, 0.7);
+}
+ .btn.white-button:hover {
+    background: rgba(255, 255, 255, 0.5);
+ }
+
+ .nav-menu-btn {
+    display: none;
+ }
 
 .navbar-brand {
     font-size: 24px;
@@ -55,9 +96,8 @@ body {
 }
 
 .container {
-
-margin-top: 20px;
-text-align: center;
+    margin-top: 20px;
+    text-align: center;
 }
 
 .signed_in_as {
