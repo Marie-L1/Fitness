@@ -146,8 +146,7 @@ def register(request):
     return render(request, "register.html", {"form": form})
 
 
-def welcome_page(request):
-    if request.method == "POST":
+
 
 @login_required(login_url='/tracker/login/')
 def user_profile(request):

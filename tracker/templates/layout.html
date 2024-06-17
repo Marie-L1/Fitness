@@ -50,8 +50,8 @@
                 {% else %}
                 Not signed in.
                 <div class="nav-button">
-                    <button class="btn" id="loginBtn">Login</button>
-                    <button class="btn" id="RegisterBtn">Register</button>   
+                    <button class="btn" id="loginBtn" href="{% url 'tracker:login' %}">Login</button>
+                    <button class="btn" id="RegisterBtn" href="{% url 'tracker:register' %}">Register</button>   
                 </div>   
                 <div class="nav-menu-btn">
                     <i class="bx bx-menu"></i>
