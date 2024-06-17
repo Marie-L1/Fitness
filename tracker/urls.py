@@ -5,6 +5,7 @@ app_name = 'tracker'
 
 urlpatterns = [
     path("", views.index, name="index"),
+    path("welcome/", views.welcome_page, name="welcome_page"),
     path("login/", views.login_view, name="login"),
     path("logout/", views.logout_view, name="logout"),
     path("register/", views.register, name="register"),
