@@ -29,6 +29,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+AUTH_USER_MODEL = 'tracker.User'
+
 LOGIN_URL = '/tracker/login/'
 
 # Application definition
