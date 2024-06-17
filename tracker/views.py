@@ -94,7 +94,6 @@ def index(request):
     return render(request, "tracker/index.html", context)
 
 
-@login_required(login_url='/tracker/login/')
 def login_view(request):
     if request.method == "POST":
         username = request.POST.get("username")
@@ -108,7 +107,7 @@ def login_view(request):
         else:
             messages.error(request, "Invalid username or password.")
         
-    return render(request, "tracker/login.html")
+    return render(request, "login.html")
 
 
 @login_required(login_url='/tracker/login/')
@@ -140,7 +139,7 @@ def register(request):
     else:
         form = RegistrationForm()
     
-    return render(request, "tracker/register.html", {"form": form})
+    return render(request, "register.html", {"form": form})
 
 
 
@@ -204,7 +203,7 @@ def user_profile(request):
             "water_intake_chart": water_intake_chart,
         }
 
-        return render(request, "tracker/user_profile.html", context)
+        return render(request, "user_profile.html", context)
     
     except Exception as e:
         print(f"Error in user_profile views : {e}")
@@ -302,7 +301,7 @@ def log_workout(request):
             return redirect("tracker:index")
     else:
         form = WorkoutForm()
-    return render(request, "tracker/log_workout.html", {"form": form})
+    return render(request, "log_workout.html", {"form": form})
 
 
 @login_required(login_url='/tracker/login/')
@@ -324,7 +323,7 @@ def edit_workout(request, workout_id):
             return redirect("user_profile")
     else:
         form = WorkoutForm(instance=workout)
-    return render(request, "tracker/edit_workout.html", {"form": form})
+    return render(request, "edit_workout.html", {"form": form})
 
 
 
@@ -337,7 +336,7 @@ def water_intake(request):
             return redirect("index")
     else:
         form = WaterIntakeForm()
-        return render(request, "tracker/water_intake.html", {"form": form})
+        return render(request, "water_intake.html", {"form": form})
     
 
 @login_required(login_url='/tracker/login/')
@@ -352,7 +351,7 @@ def mental_health(request):
     else:
         form = MentalHealthForm()
         
-    return render(request, "tracker/mental_health.html", {"form": form})
+    return render(request, "mental_health.html", {"form": form})
 
            
 
@@ -402,7 +401,7 @@ def mental_health_summary(request):
     energy_level_chart = base64.b64encode(buffer.getvalue()).decode("utf-8")
     buffer.close()
 
-    return render(request, "tracker/mental_health_summary.html", {
+    return render(request, "mental_health_summary.html", {
         "emotions": emotions,
         "daily_gratitude": daily_gratitude,
         "self_care_habits": self_care_habits,
