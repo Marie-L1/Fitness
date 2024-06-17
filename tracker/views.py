@@ -202,7 +202,7 @@ def homepage(request):
         "current_month_name": current_month_name,
     }
 
-    return render(request, "tracker/homepage.html", context)
+    return render(request, "homepage.html", context)
 
  
 @login_required(login_url='/tracker/login/')

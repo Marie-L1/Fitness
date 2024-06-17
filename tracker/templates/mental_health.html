@@ -4,60 +4,13 @@
 <div class="container mt-4">
     <h1 class="text-center">Mental Health Tracker</h1>
 
-    <div class="card mb-4">
-        <div class="card-header">
-            <h2>Log Daily Emotion</h2>
-        </div>
-        <div class="card-body" id="emotion_log">
-            <input type="hidden" name="form_name" value="emotion">
-            {{ emotion_form.as_p }}
-        </div>
-    </div>
-
-    <div class="card mb-4">
-        <div class="card-header">
-            <h2>Log Daily Gratitude</h2>
-        </div>
-        <div class="card-body" id="gratitude_log">
-            <input type="hidden" name="form_name" value="daily_gratitude">
-            {{ daily_gratitude_form.as_p }}
-        </div>
-    </div>
-
-    <div class="card mb-4">
-        <div class="card-header">
-            <h2>Log Self-Care Habit</h2>
-        </div>
-        <div class="card-body" id="self_care_log">
-            <input type="hidden" name="form_name" value="self_care_habit">
-            {{ self_care_habit_form.as_p }}
-        </div>
-    </div>
-
-    <div class="card mb-4">
-        <div class="card-header">
-            <h2>Log Daily Energy Level</h2>
-        </div>
-        <div class="card-body" id="energy_log">
-            <input type="hidden" name="form_name" value="energy_level">
-            {{ energy_level_form.as_p }}
-        </div>
-    </div>
-
-    <div class="card mb-4">
-        <div class="card-header">
-            <h2>Rant Section</h2>
-        </div>
-        <div class="card-body" id="rant_log">
-            <input type="hidden" name="form_name" value="rant">
-            {{ rant_form.as_p }}
-        </div>
-    </div>
-
     <form method="POST" action="{% url 'tracker:mental_health' %}">
         {% csrf_token %}
-        <button type="submit" class="btn btn-primary">Submit All</button>
+        
+        {{ form.as_ul }}
+
+        <button type="submit" class="btn btn-primary">Submit</button>
     </form>
 </div>
-
 {% endblock %}
+
