@@ -110,7 +110,7 @@ def login_view(request):
         if user is not None:
             login(request, user)
             print("Authenticate successful.")   # debugging
-            return redirect("tracker:index")
+            return redirect("tracker:homepage")
         else:
             print("Authentication failed.") # debugging
             messages.error(request, "Invalid username or password.")
@@ -135,7 +135,7 @@ def register(request):
             messages.error(request, 'Please correct the error below.')
     else:
         form = RegistrationForm()
-    return render(request, 'tracker/register.html', {'form': form})
+    return render(request, 'register.html', {'form': form})
 
 
 

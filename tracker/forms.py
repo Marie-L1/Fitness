@@ -1,13 +1,13 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
-from django.contrib.auth.models import User
-from .models import Goal, Workout, WaterIntake, MentalHealth
+from django.contrib.auth import get_user_model
+from .models import Goal, Workout, WaterIntake, MentalHealth, User
 
 class RegistrationForm(UserCreationForm):
     email = forms.EmailField()
 
     class Meta:
-        model = User  # Use the custom User model
+        model = get_user_model()  # Use the custom User model
         fields = ["username", "email", "password1", "password2"]
 
     def clean_email(self):
