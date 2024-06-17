@@ -99,12 +99,16 @@ def login_view(request):
         username = request.POST.get("username")
         password = request.POST.get("password")
 
+        print(f"Attempting to authenticate user: {username}")   # debugging
+
         user = authenticate(request, username=username, password=password)
 
         if user is not None:
             login(request, user)
+            print("Authenticate successful.")   # debugging
             return redirect("tracker:index")
         else:
+            print("Authentication failed.") # debugging
             messages.error(request, "Invalid username or password.")
         
     return render(request, "login.html")
