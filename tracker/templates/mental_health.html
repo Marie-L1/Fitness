@@ -6,55 +6,43 @@
 
     <form method="POST" action="{% url 'tracker:mental_health' %}">
         {% csrf_token %}
-        
-        <div class="card mb-4">
-            <div class="card-header">
-                <h2>Log Daily Emotion</h2>
-            </div>
-            <div class="card-body">
-                {{ form.emotion }}
-            </div>
+
+        <div class="form-group">
+            <label for="id_emotion">Daily Emotion</label>
+            <input type="text" class="form-control" id="id_emotion" name="emotion" required>
         </div>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                <h2>Log Daily Gratitude</h2>
-            </div>
-            <div class="card-body">
-                {{ form.daily_gratitude }}
-            </div>
+        <div class="form-group">
+            <label for="id_daily_gratitude">Daily Gratitude</label>
+            <textarea class="form-control" id="id_daily_gratitude" name="daily_gratitude" rows="5" required></textarea>
         </div>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                <h2>Log Self-Care Habit</h2>
-            </div>
-            <div class="card-body">
-                {{ form.self_care_habit }}
-            </div>
+        <div class="form-group">
+            <label for="id_self_care_habit">Self-Care Habit</label>
+            <input type="text" class="form-control" id="id_self_care_habit" name="self_care_habit" required>
         </div>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                <h2>Log Daily Energy Level</h2>
-            </div>
-            <div class="card-body">
-                {{ form.energy_level }}
-            </div>
+        <div class="form-group">
+            <label for="id_energy_level">Energy Level</label>
+            <select class="form-control" id="id_energy_level" name="energy_level" required>
+                <option value="" selected disabled>Select Energy Level</option>
+                <option value="1">1 - Very Low</option>
+                <option value="2">2 - Low</option>
+                <option value="3">3 - Moderate</option>
+                <option value="4">4 - High</option>
+                <option value="5">5 - Very High</option>
+            </select>
         </div>
 
-        <div class="card mb-4">
-            <div class="card-header">
-                <h2>Rant Section</h2>
-            </div>
-            <div class="card-body">
-                {{ form.rant }}
-            </div>
+        <div class="form-group">
+            <label for="id_rant">Rant Section</label>
+            <textarea class="form-control" id="id_rant" name="rant" rows="5"></textarea>
         </div>
 
         <button type="submit" class="btn btn-primary">Submit All</button>
     </form>
 </div>
 {% endblock %}
+
 
 
