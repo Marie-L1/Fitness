@@ -12,6 +12,7 @@
     </head>
 
     <body>
+    <div class="wrapper">
         <nav class="navbar navbar-expand-lg navbar-light bg-light">
             <div class="container-fluid">
               <a class="navbar-brand" href="{% url 'tracker:index' %}">Personal Wellness Tracker</a>
@@ -56,16 +57,16 @@
                     <i class="bx bx-menu"></i>
                 </div>
                     {% endif %}
-                   
-                
-                   
-             
         </div>
     </nav>
+    </div>
+    
 
         <div class="continaer mt-4">
             {% block body %}
             {% endblock %}
         </div>
+
+
     </body>
 </html>
