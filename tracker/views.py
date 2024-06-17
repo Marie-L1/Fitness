@@ -125,29 +125,17 @@ def logout_view(request):
 
 
 def register(request):
-    if request.method == "POST":
+    if request.method == 'POST':
         form = RegistrationForm(request.POST)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.set_password(form.cleaned_data["password1"])
-            user.save()
-            username = user.username
-            password = form.cleaned_data.get("password1")
-            user = authenticate(request, username=username, password=password)
-            if user is not None:
-                login(request, user)
-                logger.debug(f"User {username} registered and logged in.")
-                return HttpResponseRedirect(reverse("index"))
-            else:
-                logger.error("User could not be authenticated after registration.")
-                return render(request, "register.html", {"form": form, "message": "User could not be authenticated."})
+            form.save()
+            messages.success(request, 'Your account has been created successfully!')
+            return redirect('tracker:login')
         else:
-            logger.error(f"Form errors: {form.errors}")
-            return render(request, "register.html", {"form": form, "message": form.errors})
+            messages.error(request, 'Please correct the error below.')
     else:
         form = RegistrationForm()
-    
-    return render(request, "register.html", {"form": form})
+    return render(request, 'tracker/register.html', {'form': form})
 
 
 
