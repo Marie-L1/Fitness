@@ -237,29 +237,35 @@ def mental_health_summary(request):
     try:
         current_month = timezone.now().month
 
-        # Fetching mental health entries for the current user and current month
+        # Filter the entries for the current user and the current month
         mental_health_entries = MentalHealth.objects.filter(user=request.user, date__month=current_month)
 
-        # Generate emotions pie chart
-        emotion_chart = generate_emotion_chart(request.user)
+        # Example queries based on your model structure
+        emotions = mental_health_entries.values("emotion").annotate(count=Count("emotion"))
+        daily_gratitude = mental_health_entries.values("date", "daily_gratitude")
+        self_care_habits = mental_health_entries.values("date", "self_care_habit")
+        energy_levels = mental_health_entries.values("date", "energy_level")
+        rants = mental_health_entries.values("date", "rant")
 
-        # Generate energy level graph
+        # Example charts generation (using mock functions)
+        emotion_chart = generate_emotion_chart(request.user)
         energy_level_chart = generate_energy_level_graph(request.user)
 
         context = {
-            "emotions": mental_health_entries,
+            "emotions": emotions,
+            "daily_gratitude": daily_gratitude,
+            "self_care_habits": self_care_habits,
+            "energy_levels": energy_levels,
+            "rants": rants,
             "emotion_chart": emotion_chart,
-            "energy_level_chart": energy_level_chart,
-            # Add other context data as needed
+            "energy_level_chart": energy_level_chart
         }
 
         return render(request, "mental_health_summary.html", context)
-
+    
     except Exception as e:
         print(f"Error in mental_health_summary views: {e}")
         return redirect("tracker:index")
-
-
 
 
 @login_required(login_url='/tracker/login/')
