@@ -31,21 +31,10 @@ def index(request):
         return redirect("tracker:homepage")
     return render(request, "index.html")
 
-@login_required(login_url='/tracker/login/')
-def homepage(request):
-    user = request.user
-    print(f"User: {user}, ID: {user.id}")   # Debugging
 
+def generate_water_intake_graph(user):
     today = datetime.now().date()
     current_month = datetime.now().month
-    current_month_name = datetime.now().strftime('%B')
-
-    # Fetching current goals (if any)
-    current_goals = Goal.objects.filter(user=user, achieved=False)
-
-    # Fetching daily water intake
-    daily_intake = WaterIntake.objects.filter(user=user, date=today)
-    daily_intake_ml = daily_intake.aggregate(total_intake=Sum("amount_ml"))["total_intake"] or 0
 
     # Generating monthly water intake graph
     monthly_intake = WaterIntake.objects.filter(user=user, date__year=today.year, date__month=current_month).values("date").annotate(total_intake=Sum("amount_ml"))
@@ -67,11 +56,11 @@ def homepage(request):
     graph = base64.b64encode(image_png).decode("utf-8")
     plt.close()
 
-    # Fetching daily emotion logged for today
-    today_emotion_entry = MentalHealth.objects.filter(user=user, date=today).first()
-    today_emotion = today_emotion_entry.emotion if today_emotion_entry else None
+    return graph
 
-    # Generating heatmap data for the current month
+
+def generate_heatmap_data(user):
+    current_month = datetime.now().month
     logged_dates = WaterIntake.objects.filter(user=user, date__month=current_month).dates("date", "day")
     heatmap_data = {date.day: 0 for date in logged_dates}
     for date in logged_dates:
@@ -80,22 +69,62 @@ def homepage(request):
 
     # Normalize heatmap data for color intensity
     max_intensity = max(heatmap_data.values(), default=1)
-    heatmap_data_list = [{'day': day, 'color_value': heatmap_data[day] / max_intensity} for day in range(1, today.day + 1)]
+    heatmap_data_list = [{'day': day, 'color_value': heatmap_data[day] / max_intensity} for day in range(1, timezone.now().day + 1)]
 
-    # Fetching workout history
-    workout_history = Workout.objects.filter(user=user)
+    return heatmap_data_list
 
-    context = {
-        "workout_history": workout_history,
-        "current_goals": current_goals,
-        "graph": graph,
-        "daily_intake_ml": daily_intake_ml,
-        "today_emotion": today_emotion,
-        "heatmap_data_list": heatmap_data_list,
-        "current_month_name": current_month_name,
-    }
 
-    return render(request, "tracker/homepage.html", context)
+def generate_emotion_chart(user):
+    current_month = datetime.now().month
+
+    emotions = MentalHealth.objects.filter(user=user, date__month=current_month).values("entry").annotate(count=Count("entry"))
+    emotion_data = {entry["entry"]: entry["count"] for entry in emotions}
+    labels = list(emotion_data.keys())
+    sizes = list(emotion_data.values())
+    colors = ["#ff9999", "#66b3ff", "#99ff99", "#ffcc99"]
+
+    fig1, ax1 = plt.subplots()
+    ax1.pie(sizes, lables=labels, autopct="%1.1f%%", startangle=90, colors=colors)
+    ax1.axis("equal")
+
+    buffer = BytesIO()
+    plt.savefig(buffer, format="png")
+    plt.close(fig)
+    buffer.seek(0)
+    chart = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    buffer.close()
+
+    return chart
+
+
+def generate_energy_level_graph(user):
+    current_month = datetime.now().month
+
+    energy_levels = MentalHealth.objects.filter(user=user, date__month=current_month).values("date","energy_level").annotate(count=Count("date"))
+    dates = [entry["date"] for entry in energy_levels]
+    levels = [entry["energy_level"] for entry in energy_levels]
+
+    plt.figure()
+     plt.plot(dates, levels)
+    plt.xlabel("Date")
+    plt.ylabel("Daily Energy Level")
+    plt.grid(True)
+
+    buffer = BytesIO()
+    plt.savefig(buffer, format="png")
+    plt.close()
+    buffer.seek(0)
+    graph = base64.b64encode(buffer.getvalue()).decode("utf-8")
+    buffer.close()
+
+    return graph
+
+
+
+
+@login_required(login_url='/tracker/login/')
+def homepage(request):
+    
 
 
 def login_view(request):
@@ -355,55 +384,4 @@ def mental_health(request):
 
 @login_required(login_url='/tracker/login/')
 def mental_health_summary(request):
-    current_month = timezone.now().month
-
-    #filter the entries for the current user and the current month
-    mental_health_entries = MentalHealth.objects.filter(user=request.user, date__month=current_month)
-
-    # get data for each field
-    emotions = mental_health_entries("emotion").annotate(count=Count("emotion"))
-    daily_gratitude = mental_health_entries("date", "daily_graitiude")
-    self_care_habits = mental_health_entries("date", "self_care_habit")
-    energy_levels = mental_health_entries("date", "energy_level")
-    rants = mental_health_entries("date", "rant")
-
-    # data for pie chart and graph
-    emotion_labels = [entry["emotion"] for entry in emotions]
-    emotion_sizes = [entry["count"] for entry in emotions]
-
-    fig1, ax1 = plt.subplots()
-    ax1.pie(emotion_sizes, lables=emotion_labels, autopct="%1.1f%%", startangle=90)
-    ax1.axis("equal")
-
-    # save pie chart to png image
-    buffer = BytesIO()
-    plt.savefig(buffer, format="png")
-    emotion_chart = base64.b64encoded(buffer.getvalue()).decode("utf-8")
-    buffer.close()
-
-    # create the line graph for energy levels
-    dates = [entry["date"] for entry in energy_levels]
-    levels = [entry["energy_level"] for entry in energy_levels]
-
-    plt.figure()
-    plt.plot(dates, levels)
-    plt.xlabel("Date")
-    plt.ylabel("Daily Energy Level")
-    plt.grid(True)
-
-    # Save the line graph to png image
-    buffer = BytesIO()
-    plt.savefig(buffer, format="png")
-    buffer.seek(0)
-    energy_level_chart = base64.b64encode(buffer.getvalue()).decode("utf-8")
-    buffer.close()
-
-    return render(request, "mental_health_summary.html", {
-        "emotions": emotions,
-        "daily_gratitude": daily_gratitude,
-        "self_care_habits": self_care_habits,
-        "energy_levels": energy_levels,
-        "rants": rants,
-        "emotion_chart": emotion_chart,
-        "energy_level_chart": energy_level_chart
-    })
+    
