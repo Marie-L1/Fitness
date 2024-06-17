@@ -83,9 +83,9 @@ def generate_emotion_chart(user):
     sizes = list(emotion_data.values())
     colors = ["#ff9999", "#66b3ff", "#99ff99", "#ffcc99"]
 
-    fig1, ax1 = plt.subplots()
-    ax1.pie(sizes, lables=labels, autopct="%1.1f%%", startangle=90, colors=colors)
-    ax1.axis("equal")
+    fig, ax = plt.subplots()
+    ax.pie(sizes, lables=labels, autopct="%1.1f%%", startangle=90, colors=colors)
+    ax.axis("equal")
 
     buffer = BytesIO()
     plt.savefig(buffer, format="png")
@@ -105,7 +105,7 @@ def generate_energy_level_graph(user):
     levels = [entry["energy_level"] for entry in energy_levels]
 
     plt.figure()
-     plt.plot(dates, levels)
+    plt.plot(dates, levels)
     plt.xlabel("Date")
     plt.ylabel("Daily Energy Level")
     plt.grid(True)
@@ -119,12 +119,6 @@ def generate_energy_level_graph(user):
 
     return graph
 
-
-
-
-@login_required(login_url='/tracker/login/')
-def homepage(request):
-    
 
 
 def login_view(request):
@@ -185,7 +179,7 @@ def homepage(request):
     daily_intake_ml = daily_intake.aggregate(total_intake=Sum("amount_ml"))["total_intake"] or 0
 
     # Generate monthly water intake graph
-    graph = generate_monthly_intake_graph(user, current_month)
+    graph = generate_water_intake_graph(user, current_month)
 
     # Fetching daily emotion logged for today
     today_emotion_entry = MentalHealth.objects.filter(user=user, date=today).first()
@@ -209,6 +203,62 @@ def homepage(request):
 
     return render(request, "homepage.html", context)
  
+
+@login_required(login_url='/tracker/login/')
+def user_profile(request):
+    try:
+        user = request.user
+        print(f"User: {user}, ID: {user.id}")   # Debugging
+
+        past_workouts = Workout.objects.filter(user=user).order_by("-date")
+
+        # Generate emotions pie chart
+        emotion_chart = generate_emotion_chart(user)
+
+        # Generate water intake graph
+        water_intake_chart = generate_water_intake_graph(user)
+
+        context = {
+            "user": user,
+            "past_workouts": past_workouts,
+            "emotion_chart": emotion_chart,
+            "water_intake_chart": water_intake_chart,
+        }
+
+        return render(request, "user_profile.html", context)
+
+    except Exception as e:
+        print(f"Error in user_profile views : {e}")
+        return redirect("tracker:index")
+    
+
+@login_required(login_url='/tracker/login/')
+def mental_health_summary(request):
+    try:
+        current_month = timezone.now().month
+
+        # Fetching mental health entries for the current user and current month
+        mental_health_entries = MentalHealth.objects.filter(user=request.user, date__month=current_month)
+
+        # Generate emotions pie chart
+        emotion_chart = generate_emotion_chart(request.user)
+
+        # Generate energy level graph
+        energy_level_chart = generate_energy_level_graph(request.user)
+
+        context = {
+            "emotions": mental_health_entries,
+            "emotion_chart": emotion_chart,
+            "energy_level_chart": energy_level_chart,
+            # Add other context data as needed
+        }
+
+        return render(request, "mental_health_summary.html", context)
+
+    except Exception as e:
+        print(f"Error in mental_health_summary views: {e}")
+        return redirect("tracker:index")
+
 
 
 
@@ -355,8 +405,3 @@ def mental_health(request):
     return render(request, "mental_health.html", {"form": form})
 
            
-
-
-@login_required(login_url='/tracker/login/')
-def mental_health_summary(request):
-    
