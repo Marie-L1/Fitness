@@ -26,9 +26,13 @@ User = get_user_model()
 from .models import User, Workout, Goal, WaterIntake, MentalHealth
 from .forms import WorkoutForm, GoalForm, WaterIntakeForm, RegistrationForm, MentalHealthForm
 
+def index(request):
+    if request.user.is_authenticated:
+        return redirect("tracker:homepage")
+    return render(request, "index.html")
 
 @login_required(login_url='/tracker/login/')
-def index(request):
+def homepage(request):
     user = request.user
     print(f"User: {user}, ID: {user.id}")   # Debugging
 
@@ -91,7 +95,7 @@ def index(request):
         "current_month_name": current_month_name,
     }
 
-    return render(request, "tracker/index.html", context)
+    return render(request, "tracker/homepage.html", context)
 
 
 def login_view(request):
