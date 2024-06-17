@@ -7,7 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>{% block title %}Fitness Tracker{% endblock %}</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' 
+        <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css'>
         <link href="{% static 'tracker/styles.css' %}" rel="stylesheet">
     </head>
 
@@ -50,8 +50,8 @@
                 {% else %}
                 Not signed in.
                 <div class="nav-button">
-                    <button class="btn white-btn" id="loginBtn" href="{% url 'tracker:login' %}">Login</button>
-                    <button class="btn" id="RegisterBtn" href="{% url 'tracker:register' %}">Register</button>   
+                    <a class="btn white-btn" id="loginBtn" href="{% url 'tracker:login' %}">Login</a>
+                    <a class="btn" id="RegisterBtn" href="{% url 'tracker:register' %}">Register</a>          
                 </div>   
                 <div class="nav-menu-btn">
                     <i class="bx bx-menu"></i>
@@ -67,6 +67,9 @@
             {% endblock %}
         </div>
 
-
+        <!--scripts for bootstrap and jQuery-->
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poTufE3MOIv2D8QdH4jcFN8R/tE3oF7zPCpOr5B+XgktVZPIWsl" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js" integrity="sha384-pzjw8f+ua7Kw1TIq+lmfJbwZK1FSZJpItbo1bWzU0inEt+lpiK+j+cF57Y8A54p9" crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-xrRywqDH4u8Wuo4c78K0upovRer1CTu8iLJoCG7/zl6j6Fknl0A9RsFAmYlOW2OQ" crossorigin="anonymous"></script>
     </body>
 </html>
