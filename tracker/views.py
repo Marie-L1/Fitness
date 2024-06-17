@@ -91,7 +91,7 @@ def index(request):
         "current_month_name": current_month_name,
     }
 
-    return render(request, "index.html", context)
+    return render(request, "tracker/index.html", context)
 
 
 @login_required(login_url='/tracker/login/')
@@ -109,6 +109,7 @@ def login_view(request):
             messages.error(request, "Invalid username or password.")
         
     return render(request, "tracker/login.html")
+
 
 @login_required(login_url='/tracker/login/')
 def logout_view(request):
@@ -139,7 +140,7 @@ def register(request):
     else:
         form = RegistrationForm()
     
-    return render(request, "register.html", {"form": form})
+    return render(request, "tracker/register.html", {"form": form})
 
 
 
@@ -231,7 +232,7 @@ def new_goal(request: HttpRequest) -> HttpResponse:
             except Exception as e:
                 print(f"Unexpected error: {e}")
 
-    return redirect("index")
+    return redirect("tracker:index")
 
 
 @login_required(login_url='/tracker/login/')
@@ -298,10 +299,10 @@ def log_workout(request):
             workout = form.save(commit=False)
             workout.calories_burned = calculated_calories_burned(workout.activity_type, workout.duration_minutes)
             workout.save()
-            return redirect("index")
+            return redirect("tracker:index")
     else:
         form = WorkoutForm()
-    return render(request, "log_workout.html", {"form": form})
+    return render(request, "tracker/log_workout.html", {"form": form})
 
 
 @login_required(login_url='/tracker/login/')
@@ -310,7 +311,7 @@ def delete_workout(request, workout_id):
     if request.method == "POST":
         workout.delete()
         return redirect("index")
-    return redirect("user_profile")    
+    return redirect("tracker:user_profile")    
 
 
 @login_required(login_url='/tracker/login/')
@@ -323,7 +324,7 @@ def edit_workout(request, workout_id):
             return redirect("user_profile")
     else:
         form = WorkoutForm(instance=workout)
-    return render(request, "edit_workout.html", {"form": form})
+    return render(request, "tracker/edit_workout.html", {"form": form})
 
 
 
@@ -336,7 +337,7 @@ def water_intake(request):
             return redirect("index")
     else:
         form = WaterIntakeForm()
-        return render(request, "water_intake.html", {"form": form})
+        return render(request, "tracker/water_intake.html", {"form": form})
     
 
 @login_required(login_url='/tracker/login/')
@@ -401,7 +402,7 @@ def mental_health_summary(request):
     energy_level_chart = base64.b64encode(buffer.getvalue()).decode("utf-8")
     buffer.close()
 
-    return render(request, "mental_health_summary.html", {
+    return render(request, "tracker/mental_health_summary.html", {
         "emotions": emotions,
         "daily_gratitude": daily_gratitude,
         "self_care_habits": self_care_habits,
