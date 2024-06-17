@@ -4,7 +4,11 @@
 <h2>Login</h2>
 
 {% if message %}
-    <div>{{ message }}</div>
+    <div>
+        {% for message in messages %}
+            <div class="alert alert-danger">{{ message }}</div>
+        {% endfor %}
+    </div>
 {% endif %}
 
 <form action="{% url 'tracker:login' %}" method="post">
