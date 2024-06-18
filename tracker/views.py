@@ -208,28 +208,36 @@ def homepage(request):
 @login_required(login_url='/tracker/login/')
 def user_profile(request):
     try:
-        user = request.user
-        print(f"User: {user}, ID: {user.id}")   # Debugging
+        current_month = timezone.now().month
 
-        past_workouts = Workout.objects.filter(user=user).order_by("-date")
+        # Filter the entries for the current user and the current month
+        mental_health_entries = MentalHealth.objects.filter(user=request.user, date__month=current_month)
 
-        # Generate emotions pie chart
-        emotion_chart = generate_emotion_chart(user)
+        # Aggregating data for display
+        emotions = mental_health_entries.values("emotion").annotate(count=Count("emotion"))
+        daily_gratitude = mental_health_entries.values("date", "daily_gratitude")
+        self_care_habits = mental_health_entries.values("date", "self_care_habit")
+        energy_levels = mental_health_entries.values("date", "energy_level")
+        rants = mental_health_entries.values("date", "rant")
 
-        # Generate water intake graph
-        water_intake_chart = generate_water_intake_graph(user)
+        # Generate charts
+        emotion_chart = generate_emotion_chart(request.user)
+        energy_level_chart = generate_energy_level_graph(request.user)
 
         context = {
-            "user": user,
-            "past_workouts": past_workouts,
+            "emotions": emotions,
+            "daily_gratitude": daily_gratitude,
+            "self_care_habits": self_care_habits,
+            "energy_levels": energy_levels,
+            "rants": rants,
             "emotion_chart": emotion_chart,
-            "water_intake_chart": water_intake_chart,
+            "energy_level_chart": energy_level_chart,
         }
 
         return render(request, "user_profile.html", context)
-
+    
     except Exception as e:
-        print(f"Error in user_profile views : {e}")
+        print(f"Error in user_profile views: {e}")
         return redirect("tracker:index")
     
 
