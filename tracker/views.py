@@ -242,15 +242,13 @@ def mental_health_summary(request):
         # Filter the entries for the current user and the current month
         mental_health_entries = MentalHealth.objects.filter(user=request.user, date__month=current_month)
 
-        # Example queries based on your model structure
         emotions = mental_health_entries.values("emotion").annotate(count=Count("emotion"))
         daily_gratitude = mental_health_entries.values("date", "daily_gratitude")
         self_care_habits = mental_health_entries.values("date", "self_care_habit")
         energy_levels = mental_health_entries.values("date", "energy_level")
         rants = mental_health_entries.values("date", "rant")
 
-        # Example charts generation (using mock functions)
-        # Replace with your actual chart generation functions
+        # chart generations
         emotion_chart = generate_emotion_chart(request.user)
         energy_level_chart = generate_energy_level_graph(request.user)
 
@@ -262,7 +260,7 @@ def mental_health_summary(request):
             "rants": rants,
             "emotion_chart": emotion_chart,
             "energy_level_chart": energy_level_chart,
-            "mental_health_entries": mental_health_entries  # Pass the queryset for any additional processing in the template
+            "mental_health_entries": mental_health_entries  
         }
 
         return render(request, "mental_health_summary.html", context)
