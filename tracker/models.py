@@ -89,3 +89,6 @@ class MentalHealth(models.Model):
     self_care_habit = models.CharField(max_length=100, blank=True, null=True)
     energy_level = models.IntegerField(blank=True, null=True)
     rant = models.TextField(max_length=500, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.date}"

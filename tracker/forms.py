@@ -105,6 +105,6 @@ class MentalHealthForm(forms.ModelForm):
         fields = ["date", "emotion", "daily_gratitude", "self_care_habit", "energy_level", "rant"]
         widgets = {
             "date": forms.DateInput(attrs={"type": "date"}),
-            "daily_graitude": forms.Textarea(attrs={"rows": 10}),
+            "daily_gratitude": forms.Textarea(attrs={"rows": 10}),
             "rant": forms.Textarea(attrs={"rows": 20}),
         }
