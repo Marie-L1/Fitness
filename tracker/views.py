@@ -238,8 +238,23 @@ def user_profile(request):
     
     except Exception as e:
         print(f"Error in user_profile views: {e}")
-        return redirect("tracker:index")
+        return redirect("tracker:homepage")
     
+
+
+@login_required(login_url='/tracker/login/')
+def mental_health(request):
+    if request.method == 'POST':
+        form = MentalHealthForm(request.POST)
+        if form.is_valid():
+            mental_health_entry = form.save(commit=False)
+            mental_health_entry.user = request.user
+            mental_health_entry.save()
+            return redirect('tracker:mental_health_summary')
+    else:
+        form = MentalHealthForm()
+    
+    return render(request, 'mental_health.html', {'form': form})
 
 
 @login_required(login_url='/tracker/login/')
@@ -275,7 +290,7 @@ def mental_health_summary(request):
     
     except Exception as e:
         print(f"Error in mental_health_summary views: {e}")
-        return redirect("tracker:index")
+        return redirect("tracker:homepage")
 
 
 @login_required(login_url='/tracker/login/')
@@ -406,18 +421,5 @@ def water_intake(request):
         return render(request, "water_intake.html", {"form": form})
     
 
-@login_required(login_url='/tracker/login/')
-def mental_health(request):
-    if request.method == 'POST':
-        form = MentalHealthForm(request.POST)
-        if form.is_valid():
-            mental_health_entry = form.save(commit=False)
-            mental_health_entry.user = request.user
-            mental_health_entry.save()
-            return redirect('tracker:mental_health_summary')
-    else:
-        form = MentalHealthForm()
-    
-    return render(request, 'mental_health.html', {'form': form})
 
            
