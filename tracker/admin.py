@@ -8,3 +8,4 @@ admin.site.register(Workout)
 admin.site.register(Goal)
 admin.site.register(WaterIntake)
 admin.site.register(MentalHealth)
+
