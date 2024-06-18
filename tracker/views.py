@@ -241,7 +241,6 @@ def user_profile(request):
         return redirect("tracker:homepage")
     
 
-
 @login_required(login_url='/tracker/login/')
 def mental_health(request):
     if request.method == 'POST':
