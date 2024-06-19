@@ -20,7 +20,7 @@
 <div class="container">
     <h2>Logged Mental Health</h2>
     {% if mental_health_logs %}
-    {% for log in mental_health_logs %}
+    {% for log in mental_health_entries %}
     <div class="mental-health-log-container" id="log-{{ log.id }}">
         <p>Date: {{ log.date }}</p>
         <p>Emotion: {{ log.emotion }}</p>
