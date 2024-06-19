@@ -3,7 +3,7 @@
 {% block body %}
 
 <div class="container mt-4">
-    <h1 class="text-center">{{ user.username }}'s Mental Health Summary</h1>
+    <h1 class="text-center">{{ request.user.username }}'s Mental Health Summary</h1>
 
     <!-- emotions pie chart -->
     <div class="card mb-4">
@@ -23,7 +23,7 @@
         <div class="card-body">
             <ul>
                 {% for gratitude in daily_gratitudes %}
-                    <li>{{ gratitude.date }}: {{ gratitude.gratitude }}</li>
+                    <li>{{ entry.date }}: {{ entry.gratitude }}</li>
                 {% endfor %}
             </ul>
         </div>
@@ -37,7 +37,7 @@
         <div class="card-body">
             <ul>
                 {% for self_care_habit in self_care_habits %}
-                    <li>{{ self_care_habit.date }}: {{ self_care_habit.habit }}</li>
+                    <li>{{ entry.date }}: {{ entry.self_care_habit }}</li>
                 {% endfor %}
             </ul>
         </div>
@@ -62,7 +62,7 @@
         <div class="card-body">
             <ul>
                 {% for rant in rants %}
-                    <li>{{ rant.date }}: {{ rant.rant }}</li>
+                    <li>{{ entry.date }}: {{ entry.rant }}</li>
                 {% endfor %}
             </ul>
         </div>
