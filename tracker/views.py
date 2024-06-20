@@ -213,12 +213,22 @@ def user_profile(request):
         # Filter the entries for the current user and the current month
         mental_health_entries = MentalHealth.objects.filter(user=request.user, date__month=current_month)
 
+        # debugging
+        print("Mental Health Entries:", mental_health_entries)
+
         # Aggregating data for display
         emotions = mental_health_entries.values("emotion").annotate(count=Count("emotion"))
         daily_gratitude = mental_health_entries.values("date", "daily_gratitude")
         self_care_habits = mental_health_entries.values("date", "self_care_habit")
         energy_levels = mental_health_entries.values("date", "energy_level")
         rants = mental_health_entries.values("date", "rant")
+
+        # Debugging - Print aggregated data
+        print("Emotions:", emotions)
+        print("Daily Gratitude:", daily_gratitude)
+        print("Self Care Habits:", self_care_habits)
+        print("Energy Levels:", energy_levels)
+        print("Rants:", rants)
 
         # Generate charts
         emotion_chart = generate_emotion_chart(request.user)
