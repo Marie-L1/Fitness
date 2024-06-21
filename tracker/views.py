@@ -266,6 +266,7 @@ def mental_health(request):
     return render(request, 'mental_health.html', {'form': form})
 
 
+
 @login_required(login_url='/tracker/login/')
 def mental_health_summary(request):
     try:
