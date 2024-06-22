@@ -27,7 +27,6 @@ class RegistrationForm(UserCreationForm):
         return cleaned_data
 
    
-
 class GoalForm(forms.ModelForm):
     class Meta:
         model = Goal
@@ -66,7 +65,6 @@ class WorkoutForm(forms.ModelForm):
             raise forms.ValidationError("The distance must be a positive number.")
         
 
-
 class WaterIntakeForm(forms.ModelForm):
     quick_add = forms.ChoiceField(
         label="Quick Add",
@@ -78,6 +76,7 @@ class WaterIntakeForm(forms.ModelForm):
         ],
         required=False
     )
+
     class Meta:
         model = WaterIntake
         fields = ["amount_ml", "amount_oz"]
