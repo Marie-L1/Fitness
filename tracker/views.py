@@ -427,7 +427,6 @@ def edit_workout(request, workout_id):
     return render(request, "edit_workout.html", {"form": form})
 
 
-
 @login_required(login_url='/tracker/login/')
 def water_intake(request):
     if request.method == "POST":
@@ -438,7 +437,4 @@ def water_intake(request):
     else:
         form = WaterIntakeForm()
         return render(request, "water_intake.html", {"form": form})
-    
-
-
-           
+          
