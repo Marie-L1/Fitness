@@ -24,7 +24,7 @@
         <div class="card-body">
             <ul>
                 {% for gratitude in daily_gratitudes %}
-                    <li>{{ entry.date }}: {{ entry.gratitude }}</li>
+                    <li>{{ gratitude.date }}: {{ gratitude.daily_gratitude }}</li>
                 {% endfor %}
             </ul>
         </div>
@@ -38,7 +38,7 @@
         <div class="card-body">
             <ul>
                 {% for self_care_habit in self_care_habits %}
-                    <li>{{ entry.date }}: {{ entry.self_care_habit }}</li>
+                    <li>{{ self_care_habit.date }}: {{ self_care_habit.self_care_habit }}</li>
                 {% endfor %}
             </ul>
         </div>
@@ -63,7 +63,7 @@
         <div class="card-body">
             <ul>
                 {% for rant in rants %}
-                    <li>{{ entry.date }}: {{ entry.rant }}</li>
+                    <li>{{ rant.date }}: {{ rant.rant }}</li>
                 {% endfor %}
             </ul>
         </div>
