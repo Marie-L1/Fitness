@@ -37,8 +37,8 @@
         </div>
         <div class="card-body">
             <ul>
-                {% for self_care_habit in self_care_habits %}
-                    <li>{{ self_care_habit.date }}: {{ self_care_habit.self_care_habit }}</li>
+                {% for habit in self_care_habits %}
+                    <li>{{ habit.date }}: {{ habit.self_care_habit }}</li>
                 {% endfor %}
             </ul>
         </div>
