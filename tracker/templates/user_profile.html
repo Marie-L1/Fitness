@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 
 {% block body %}
-<h1>{{ user.username }}'s Profile</h1>
+<h1>{{ request.user.username }}'s Profile</h1>
 
 <div class="container">
     <h2>Monthly Water Intake</h2>
@@ -22,10 +22,10 @@
     {% if mental_health_entries %}
     {% for log in mental_health_entries %}
     <div class="mental-health-log-container" id="log-{{ log.id }}">
-        <p>Date: {{ entry.date }}</p>
-        <p>Emotion: {{ entry.emotion }}</p>
-        <p>Self-Care Habit: {{ entry.self_care_habit }}</p>
-        <p>Daily Gratitude: {{ entry.daily_gratitude }}</p>
+        <p>Date: {{ log.date }}</p>
+        <p>Emotion: {{ log.emotion }}</p>
+        <p>Self-Care Habit: {{ log.self_care_habit }}</p>
+        <p>Daily Gratitude: {{ log.daily_gratitude }}</p>
 
         <button type="button" class="btn btn-link edit-log" data-log-id="{{ log.id }}">Edit</button>
         <button type="button" class="btn btn-link delete-log" data-log-id="{{ log.id }}">Delete</button>
