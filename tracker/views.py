@@ -308,6 +308,9 @@ def mental_health_summary(request):
             "mental_health_entries": mental_health_entries  
         }
 
+        # debugging, print the context before rendering
+        print("Context:", context)
+
         return render(request, "mental_health_summary.html", context)
     
     except Exception as e:
