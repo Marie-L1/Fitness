@@ -244,6 +244,9 @@ def user_profile(request):
             "energy_level_chart": energy_level_chart,
         }
 
+        # debugging, print the context before rednering
+        print("Context:", context)
+
         return render(request, "user_profile.html", context)
     
     except Exception as e:
