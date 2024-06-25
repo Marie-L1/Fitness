@@ -218,14 +218,14 @@ def user_profile(request):
 
         # Aggregating data for display
         emotions = mental_health_entries.values("emotion").annotate(count=Count("emotion"))
-        daily_gratitude = mental_health_entries.values("date", "daily_gratitude")
+        daily_gratitudes = mental_health_entries.values("date", "daily_gratitude")
         self_care_habits = mental_health_entries.values("date", "self_care_habit")
         energy_levels = mental_health_entries.values("date", "energy_level")
         rants = mental_health_entries.values("date", "rant")
 
         # Debugging - Print aggregated data
         print("Emotions:", emotions)
-        print("Daily Gratitude:", daily_gratitude)
+        print("Daily Gratitude:", daily_gratitudes)
         print("Self Care Habits:", self_care_habits)
         print("Energy Levels:", energy_levels)
         print("Rants:", rants)
@@ -236,7 +236,7 @@ def user_profile(request):
 
         context = {
             "emotions": emotions,
-            "daily_gratitude": daily_gratitude,
+            "daily_gratitudes": daily_gratitudes,
             "self_care_habits": self_care_habits,
             "energy_levels": energy_levels,
             "rants": rants,
