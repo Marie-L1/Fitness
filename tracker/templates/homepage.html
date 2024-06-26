@@ -10,32 +10,34 @@
     </div>
     
     <!-- Adding goals -->
-    <div class="card mb-4">
-        <div class="card-header">
-            <h3>Goals</h3>
-        </div>
-        <div class="card-body">
-            <form id="new_goal_form" method="POST" action="{% url 'tracker:new_goal' %}">
-                {% csrf_token %}
-                <div class="input-group mb-4">
-                    <input type="text" name="description" class="form-control" placeholder="New goal" required>
-                    <button class="btn btn-primary" type="submit">Add Goal</button>
-                </div>
-            </form>
-            <!-- Current Goal checklist -->
-            <div class="card-body">
-                <ul class="list-group">
-                    {% for goal in current_goals %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
-                        <input type="checkbox" class="form-check-input me-1" {% if goal.achieved %}checked{% endif %} data-goal-id="{{ goal.id }}">
-                        <span contenteditable="true" class="goal_description" data-goal-id="{{ goal.id }}">{{ goal.description }}</span>
-                        <button type="button" class="btn btn-sm btn-outline-secondary update-goal-btn" data-goal-id="{{ goal.id }}">Update</button>
-                    </li>
-                    {% endfor %}
-                </ul>  
+<div class="card mb-4">
+    <div class="card-header">
+        <h3>Goals</h3>
+    </div>
+    <div class="card-body">
+        <form id="new_goal_form" method="POST" action="{% url 'tracker:new_goal' %}">
+            {% csrf_token %}
+            <div class="input-group mb-4">
+                <input type="text" name="description" class="form-control" placeholder="New goal" required>
+                <button class="btn btn-primary" type="submit">Add Goal</button>
             </div>
+        </form>
+        <!-- Current Goal checklist -->
+        <div class="card-body">
+            <ul class="list-group">
+                {% for goal in current_goals %}
+                <li class="list-group-item d-flex justify-content-between align-items-center">
+                    <input type="checkbox" class="form-check-input me-1" {% if goal.achieved %}checked{% endif %} data-goal-id="{{ goal.id }}">
+                    <span contenteditable="true" class="goal_description" data-goal-id="{{ goal.id }}">{{ goal.description }}</span>
+                    <button type="button" class="btn btn-sm btn-outline-secondary update-goal-btn" data-goal-id="{{ goal.id }}">Update</button>
+                    <button type="button" class="btn btn-sm btn-outline-danger delete-goal-btn" data-goal-id="{{ goal.id }}">Delete</button>
+                </li>
+                {% endfor %}
+            </ul>  
         </div>
     </div>
+</div>
+
 
     <!-- Daily Water Intake -->
     <div class="card mb-4">
@@ -78,35 +80,82 @@
 </div>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
-        // Get CSRF token
-        const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+   document.addEventListener("DOMContentLoaded", function() {
+    // Get CSRF token
+    const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-        // Update goal functionality
-        const updateGoalButtons = document.querySelectorAll('.update-goal-btn');
-        updateGoalButtons.forEach(button => {
-            button.addEventListener('click', function() {
-                const goalId = this.getAttribute('data-goal-id');
-                const description = document.querySelector(`.goal_description[data-goal-id="${goalId}"]`).textContent.trim();
-                const achieved = document.querySelector(`input[data-goal-id="${goalId}"]`).checked;
+    // Update goal functionality
+    const updateGoalButtons = document.querySelectorAll('.update-goal-btn');
+    updateGoalButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const goalId = this.getAttribute('data-goal-id');
+            const description = document.querySelector(`.goal_description[data-goal-id="${goalId}"]`).textContent.trim();
+            const achieved = document.querySelector(`input[data-goal-id="${goalId}"]`).checked;
 
-                fetch(`/tracker/edit_goal/${goalId}/`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRFToken': csrftoken
-                    },
-                    body: JSON.stringify({ description: description, achieved: achieved })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log('Goal updated successfully:', data);
-                    // Optionally update UI to reflect the changes
-                })
-                .catch(error => console.error('Error updating goal:', error));
-            });
+            fetch(`/tracker/edit_goal/${goalId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({ description: description, achieved: achieved })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Goal updated successfully:', data);
+                // Optionally update UI to reflect the changes
+            })
+            .catch(error => console.error('Error updating goal:', error));
         });
     });
+
+    // Delete goal functionality
+    const deleteGoalButtons = document.querySelectorAll('.delete-goal-btn');
+    deleteGoalButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const goalId = this.getAttribute('data-goal-id');
+
+            fetch(`/tracker/delete_goal/${goalId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Goal deleted successfully:', data);
+                // Remove the goal from the DOM
+                document.querySelector(`li[data-goal-id="${goalId}"]`).remove();
+            })
+            .catch(error => console.error('Error deleting goal:', error));
+        });
+    });
+
+    // Handle checkbox change for achieving goal
+    document.querySelectorAll('.form-check-input').forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const goalId = this.getAttribute('data-goal-id');
+            const achieved = this.checked;
+
+            fetch(`/tracker/edit_goal/${goalId}/`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrftoken
+                },
+                body: JSON.stringify({ achieved: achieved })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Goal updated successfully:', data);
+                // Optionally update UI to reflect the changes
+            })
+            .catch(error => console.error('Error updating goal:', error));
+        });
+    });
+});
+
 </script>
 
 {% endblock %}
