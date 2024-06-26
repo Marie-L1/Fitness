@@ -350,10 +350,12 @@ def edit_goal(request, goal_id):
 @csrf_exempt
 @login_required(login_url='/tracker/login/')
 def delete_goal(request, goal_id):
-    if request.method == 'POST':
+    try:
         goal = Goal.objects.get(id=goal_id, user=request.user)
         goal.delete()
         return JsonResponse({'status': 'success'})
+    except Goal.DoesNotExist:
+        return JsonResponse({'status': 'error', 'message': 'Goal does not exist'}, status=404)
 
 
 # calculate calories burned per minute of each activity type
