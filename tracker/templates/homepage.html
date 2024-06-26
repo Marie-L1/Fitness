@@ -9,7 +9,7 @@
         <h2>Welcome to Your Wellness Tracker</h2>
     </div>
     
-    <!-- Adding goals -->
+ <!-- Adding goals -->
 <div class="card mb-4">
     <div class="card-header">
         <h3>Goals</h3>
@@ -26,7 +26,7 @@
         <div class="card-body">
             <ul class="list-group">
                 {% for goal in current_goals %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
+                <li class="list-group-item d-flex justify-content-between align-items-center" data-goal-id="{{ goal.id }}">
                     <input type="checkbox" class="form-check-input me-1" {% if goal.achieved %}checked{% endif %} data-goal-id="{{ goal.id }}">
                     <span contenteditable="true" class="goal_description" data-goal-id="{{ goal.id }}">{{ goal.description }}</span>
                     <button type="button" class="btn btn-sm btn-outline-danger delete-goal-btn" data-goal-id="{{ goal.id }}">Delete</button>
@@ -36,6 +36,7 @@
         </div>
     </div>
 </div>
+
 
 
     <!-- Daily Water Intake -->
@@ -108,11 +109,12 @@
         });
     });
 
-     // Delete goal functionality
-     const deleteGoalButtons = document.querySelectorAll('.delete-goal-btn');
+// Delete goal functionality
+const deleteGoalButtons = document.querySelectorAll('.delete-goal-btn');
     deleteGoalButtons.forEach(button => {
         button.addEventListener('click', function() {
             const goalId = this.getAttribute('data-goal-id');
+            console.log(`Deleting goal with ID: ${goalId}`); // Debug
 
             fetch(`/tracker/delete_goal/${goalId}/`, {
                 method: 'POST',
@@ -123,6 +125,7 @@
             })
             .then(response => {
                 if (response.ok) {
+                    console.log(`Goal with ID ${goalId} deleted successfully.`); // Debug
                     // Remove the goal from the DOM
                     const goalItem = document.querySelector(`li[data-goal-id="${goalId}"]`);
                     if (goalItem) {
@@ -135,7 +138,6 @@
             .catch(error => console.error('Error deleting goal:', error));
         });
     });
-});
 
     // Handle checkbox change for achieving goal
     document.querySelectorAll('.form-check-input').forEach(checkbox => {
@@ -160,6 +162,7 @@
         });
     });
 });
+
 
 </script>
 
