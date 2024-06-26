@@ -29,7 +29,6 @@
                 <li class="list-group-item d-flex justify-content-between align-items-center">
                     <input type="checkbox" class="form-check-input me-1" {% if goal.achieved %}checked{% endif %} data-goal-id="{{ goal.id }}">
                     <span contenteditable="true" class="goal_description" data-goal-id="{{ goal.id }}">{{ goal.description }}</span>
-                    <button type="button" class="btn btn-sm btn-outline-secondary update-goal-btn" data-goal-id="{{ goal.id }}">Update</button>
                     <button type="button" class="btn btn-sm btn-outline-danger delete-goal-btn" data-goal-id="{{ goal.id }}">Delete</button>
                 </li>
                 {% endfor %}
@@ -109,8 +108,8 @@
         });
     });
 
-    // Delete goal functionality
-    const deleteGoalButtons = document.querySelectorAll('.delete-goal-btn');
+     // Delete goal functionality
+     const deleteGoalButtons = document.querySelectorAll('.delete-goal-btn');
     deleteGoalButtons.forEach(button => {
         button.addEventListener('click', function() {
             const goalId = this.getAttribute('data-goal-id');
@@ -122,15 +121,21 @@
                     'X-CSRFToken': csrftoken
                 }
             })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Goal deleted successfully:', data);
-                // Remove the goal from the DOM
-                document.querySelector(`li[data-goal-id="${goalId}"]`).remove();
+            .then(response => {
+                if (response.ok) {
+                    // Remove the goal from the DOM
+                    const goalItem = document.querySelector(`li[data-goal-id="${goalId}"]`);
+                    if (goalItem) {
+                        goalItem.remove();
+                    }
+                } else {
+                    console.error('Error deleting goal:', response.statusText);
+                }
             })
             .catch(error => console.error('Error deleting goal:', error));
         });
     });
+});
 
     // Handle checkbox change for achieving goal
     document.querySelectorAll('.form-check-input').forEach(checkbox => {
