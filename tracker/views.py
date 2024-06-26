@@ -332,7 +332,11 @@ def new_goal(request):
 @login_required(login_url='/tracker/login/')
 def edit_goal(request, goal_id):
     if request.method == 'POST':
-        goal = Goal.objects.get(id=goal_id, user=request.user)
+        try:
+            goal = Goal.objects.get(id=goal_id, user=request.user)
+        except Goal.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Goal not found'}, status=404)
+
         data = json.loads(request.body)
         if 'description' in data:
             goal.description = data['description']
@@ -340,6 +344,7 @@ def edit_goal(request, goal_id):
             goal.achieved = data['achieved']
         goal.save()
         return JsonResponse({'status': 'success', 'goal_id': goal.id})
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
 
 
 @csrf_exempt
