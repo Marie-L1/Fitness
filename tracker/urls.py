@@ -11,7 +11,6 @@ urlpatterns = [
     path("register/", views.register, name="register"),
     path("new_goal/", views.new_goal, name="new_goal"),
     path("edit_goal/<int:goal_id>/", views.edit_goal, name="edit_goal"),
-    path("toggle_goal/<int:goal_id>/", views.toggle_goal, name="toggle_goal"),
     path("delete_goal/<int:goal_id>/", views.delete_goal, name="delete_goal"),
     path("user_profile/", views.user_profile, name="user_profile"),
     path("edit_workout/<int:workout_id>", views.edit_workout, name="edit_workout"),
