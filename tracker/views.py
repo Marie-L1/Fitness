@@ -17,6 +17,7 @@ from collections import Counter
 import calendar
 from collections import defaultdict
 from datetime import datetime
+from django.views.decorators.csrf import csrf_exempt
 import numpy as np    # for array manipulation
 import json
 
@@ -319,65 +320,35 @@ def mental_health_summary(request):
 
 
 @login_required(login_url='/tracker/login/')
-def new_goal(request: HttpRequest) -> HttpResponse:
-    if request.method == "POST":
-        description = request.POST.get("description")
+def new_goal(request):
+    if request.method == 'POST':
+        description = request.POST.get('description')
         if description:
-            print(f"Request user: {request.user} (Type: {type(request.user)})")
-            print(f"Request user ID: {request.user.id}")
-
-            try:
-                # Retrieve the user instance
-                user = User.objects.get(id=request.user.id)
-                print(f"Retrieved user: {user} (Type: {type(user)})")
-
-                # Create the goal
-                Goal.objects.create(user=user, description=description)
-            except User.DoesNotExist:
-                print("User does not exist")
-            except Exception as e:
-                print(f"Unexpected error: {e}")
-
-    return redirect("tracker:index")
+            Goal.objects.create(user=request.user, description=description)
+    return redirect('tracker:homepage')
 
 
-@login_required(login_url='/tracker/login/')
-def toggle_goal(request, goal_id):
-    if request.method == "POST" and request.is_ajax():
-        try:
-            goal = Goal.objects.filter(pk=goal_id, user=request.user)
-            goal.achieved = not goal.achieved
-            goal.save()
-            return JsonResponse({"success": True})
-        except Goal.DoesNotExist:
-            return JsonResponse({"success": False, "error": "Goal not found."})
-    return JsonResponse({"success": False, "error": "Invalid request."})
-
-
+@csrf_exempt
 @login_required(login_url='/tracker/login/')
 def edit_goal(request, goal_id):
-    if request.method == "POST" and request.is_ajax():
-        try:
-            goal = Goal.objects.get(pk=goal_id, user=request.user)
-            new_description = json.loads(request.body).get("description")
-            goal.description = new_description
-            goal.save()
-            return JsonResponse({"success": True})
-        except Goal.DoesNotExist:
-            return JsonResponse({"success": False, "error": "Goal not found."})
-    return JsonResponse({"success": False, "error": "Invalid request"})
+    if request.method == 'POST':
+        goal = Goal.objects.get(id=goal_id, user=request.user)
+        data = json.loads(request.body)
+        if 'description' in data:
+            goal.description = data['description']
+        if 'achieved' in data:
+            goal.achieved = data['achieved']
+        goal.save()
+        return JsonResponse({'status': 'success', 'goal_id': goal.id})
 
 
+@csrf_exempt
 @login_required(login_url='/tracker/login/')
 def delete_goal(request, goal_id):
-    if request.method == "POST" and request.is_ajax():
-        try:
-            goal = Goal.objects.get(pk=goal_id, user=request.user)
-            goal.delete()
-            return JsonResponse({"success": True})
-        except Goal.DoesNotExist:
-             return JsonResponse({"success": False, "error": "Goal not found."})
-    return JsonResponse({"success": False, "error": "Invalid request"})
+    if request.method == 'POST':
+        goal = Goal.objects.get(id=goal_id, user=request.user)
+        goal.delete()
+        return JsonResponse({'status': 'success'})
 
 
 # calculate calories burned per minute of each activity type
