@@ -202,13 +202,16 @@ document.addEventListener("DOMContentLoaded", function() {
             .then(response => response.json())
             .then(data => {
                 console.log('Goal updated successfully:', data);
-                // Optionally update UI to reflect the changes
+                const goalDescription = document.querySelector(`.goal_description[data-goal-id="${goalId}"]`);
+                if (achieved) {
+                    goalDescription.classList.add('completed');
+                } else {
+                    goalDescription.classList.remove('completed');
+                }
             })
             .catch(error => console.error('Error updating goal:', error));
         });
     });
-});
-
 </script>
 
 {% endblock %}
