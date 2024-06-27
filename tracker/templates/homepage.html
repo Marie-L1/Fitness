@@ -101,6 +101,10 @@ document.addEventListener("DOMContentLoaded", function() {
         })
         .then(response => response.json())
         .then(data => {
+            if (data.status === 'error') {
+                console.error('Error adding goal:', data.message);
+                return;
+            }
             console.log('Goal added successfully:', data);
             // Add the new goal to the list
             const goalList = document.getElementById('goal_list');
@@ -212,6 +216,8 @@ document.addEventListener("DOMContentLoaded", function() {
             .catch(error => console.error('Error updating goal:', error));
         });
     });
+});
+
 </script>
 
 {% endblock %}
