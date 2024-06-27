@@ -105,6 +105,10 @@ body {
     
 }
 
+.goal_description.completed {
+    text-decoration: line-through;
+}
+
 /* heat map */
 .p-2 { 
     width: 30px;
