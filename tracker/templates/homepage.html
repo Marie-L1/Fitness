@@ -80,41 +80,92 @@
 </div>
 
 <script>
-   document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function() {
     // Get CSRF token
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
-    // Update goal functionality
-    const updateGoalButtons = document.querySelectorAll('.update-goal-btn');
-    updateGoalButtons.forEach(button => {
-        button.addEventListener('click', function() {
-            const goalId = this.getAttribute('data-goal-id');
-            const description = document.querySelector(`.goal_description[data-goal-id="${goalId}"]`).textContent.trim();
-            const achieved = document.querySelector(`input[data-goal-id="${goalId}"]`).checked;
+    // Add goal functionality
+    const newGoalForm = document.getElementById('new_goal_form');
+    newGoalForm.addEventListener('submit', function(event) {
+        event.preventDefault();
 
-            fetch(`/tracker/edit_goal/${goalId}/`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRFToken': csrftoken
-                },
-                body: JSON.stringify({ description: description, achieved: achieved })
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Goal updated successfully:', data);
-                // Optionally update UI to reflect the changes
-            })
-            .catch(error => console.error('Error updating goal:', error));
-        });
+        const description = document.getElementById('new_goal_description').value;
+
+        fetch('{% url "tracker:new_goal" %}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrftoken
+            },
+            body: JSON.stringify({ description: description })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Goal added successfully:', data);
+            // Add the new goal to the list
+            const goalList = document.getElementById('goal_list');
+            const newGoalItem = document.createElement('li');
+            newGoalItem.className = 'list-group-item d-flex justify-content-between align-items-center';
+            newGoalItem.setAttribute('data-goal-id', data.id);
+            newGoalItem.innerHTML = `
+                <input type="checkbox" class="form-check-input me-1" data-goal-id="${data.id}">
+                <span contenteditable="true" class="goal_description" data-goal-id="${data.id}">${data.description}</span>
+                <button type="button" class="btn btn-sm btn-outline-danger delete-goal-btn" data-goal-id="${data.id}">Delete</button>
+            `;
+            goalList.appendChild(newGoalItem);
+
+            // Reset the form
+            document.getElementById('new_goal_description').value = '';
+
+            // Add event listener for the delete button of the new goal
+            newGoalItem.querySelector('.delete-goal-btn').addEventListener('click', function() {
+                const goalId = this.getAttribute('data-goal-id');
+                fetch(`/tracker/delete_goal/${goalId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    }
+                })
+                .then(response => {
+                    if (response.ok) {
+                        newGoalItem.remove();
+                    } else {
+                        console.error('Error deleting goal:', response.statusText);
+                    }
+                })
+                .catch(error => console.error('Error deleting goal:', error));
+            });
+
+            // Add event listener for the checkbox of the new goal
+            newGoalItem.querySelector('.form-check-input').addEventListener('change', function() {
+                const goalId = this.getAttribute('data-goal-id');
+                const achieved = this.checked;
+                fetch(`/tracker/edit_goal/${goalId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': csrftoken
+                    },
+                    body: JSON.stringify({ achieved: achieved })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log('Goal updated successfully:', data);
+                    // Optionally update UI to reflect the changes
+                })
+                .catch(error => console.error('Error updating goal:', error));
+            });
+        })
+        .catch(error => console.error('Error adding goal:', error));
     });
 
-// Delete goal functionality
-const deleteGoalButtons = document.querySelectorAll('.delete-goal-btn');
+    // Delete goal functionality
+    const deleteGoalButtons = document.querySelectorAll('.delete-goal-btn');
     deleteGoalButtons.forEach(button => {
         button.addEventListener('click', function() {
             const goalId = this.getAttribute('data-goal-id');
-            console.log(`Deleting goal with ID: ${goalId}`); // Debug
+            const goalItem = this.closest('li[data-goal-id]');
 
             fetch(`/tracker/delete_goal/${goalId}/`, {
                 method: 'POST',
@@ -125,12 +176,7 @@ const deleteGoalButtons = document.querySelectorAll('.delete-goal-btn');
             })
             .then(response => {
                 if (response.ok) {
-                    console.log(`Goal with ID ${goalId} deleted successfully.`); // Debug
-                    // Remove the goal from the DOM
-                    const goalItem = document.querySelector(`li[data-goal-id="${goalId}"]`);
-                    if (goalItem) {
-                        goalItem.remove();
-                    }
+                    goalItem.remove();
                 } else {
                     console.error('Error deleting goal:', response.statusText);
                 }
@@ -162,7 +208,6 @@ const deleteGoalButtons = document.querySelectorAll('.delete-goal-btn');
         });
     });
 });
-
 
 </script>
 
