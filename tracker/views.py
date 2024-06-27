@@ -322,10 +322,15 @@ def mental_health_summary(request):
 @login_required(login_url='/tracker/login/')
 def new_goal(request):
     if request.method == 'POST':
-        description = request.POST.get('description')
-        if description:
-            Goal.objects.create(user=request.user, description=description)
-    return redirect('tracker:homepage')
+        try:
+            data = json.loads(request.body)
+            description = data.get('description')
+            if description:
+                goal = Goal.objects.create(user=request.user, description=description)
+                return JsonResponse({'id': goal.id, 'description': goal.description})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)}, status=400)
+    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=405)
 
 
 @csrf_exempt
