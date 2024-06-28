@@ -148,8 +148,7 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .catch(error => console.error('Error deleting goal:', error));
         });
-
-
+        
         // Checkbox change functionality
         goalItem.querySelector('.form-check-input').addEventListener('change', function() {
             const goalId = this.getAttribute('data-goal-id');
