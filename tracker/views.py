@@ -163,7 +163,6 @@ def register(request):
     return render(request, 'register.html', {'form': form})
 
 
-
 @login_required(login_url='/tracker/login/')
 def homepage(request):
     user = request.user
