@@ -27,6 +27,7 @@ User = get_user_model()
 from .models import User, Workout, Goal, WaterIntake, MentalHealth
 from .forms import WorkoutForm, GoalForm, WaterIntakeForm, RegistrationForm, MentalHealthForm
 
+
 def index(request):
     if request.user.is_authenticated:
         return redirect("tracker:homepage")
