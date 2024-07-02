@@ -105,7 +105,7 @@ body {
     
 }
 
-.goal_description.completed {
+.text-decoration-line-through {
     text-decoration: line-through;
 }
 
