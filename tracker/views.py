@@ -339,17 +339,21 @@ def edit_goal(request, goal_id):
     if request.method == 'POST':
         try:
             goal = Goal.objects.get(id=goal_id, user=request.user)
-        except Goal.DoesNotExist:
-            return JsonResponse({'status': 'error', 'message': 'Goal not found'}, status=404)
+            data = json.loads(request.body)
+            description = data.get('description')
+            achieved = data.get('achieved')
 
-        data = json.loads(request.body)
-        if 'description' in data:
-            goal.description = data['description']
-        if 'achieved' in data:
-            goal.achieved = data['achieved']
-        goal.save()
-        return JsonResponse({'status': 'success', 'goal_id': goal.id})
-    return JsonResponse({'status': 'error', 'message': 'Invalid request method'}, status=400)
+            if description is not None:
+                goal.description = description
+            if achieved is not None:
+                goal.achieved = achieved
+
+            goal.save()
+            return JsonResponse({'status': 'success'})
+        except Goal.DoesNotExist:
+            return JsonResponse({'status': 'error', 'message': 'Goal does not exist'})
+        except Exception as e:
+            return JsonResponse({'status': 'error', 'message': str(e)})
 
 
 @csrf_exempt
