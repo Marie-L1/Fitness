@@ -15,7 +15,7 @@
         <h3>Goals</h3>
     </div>
     <div class="card-body">
-        <form id="new_goal_form" method="POST" action="{% url 'tracker:new_goal' %}">
+        <form id="new_goal_form">
             {% csrf_token %}
             <div class="input-group mb-4">
                 <input type="text" name="description" class="form-control" placeholder="New goal" required>
@@ -24,11 +24,11 @@
         </form>
         <!-- Current Goal checklist -->
         <div class="card-body">
-            <ul class="list-group">
+            <ul class="list-group" id="goal-list">
                 {% for goal in current_goals %}
                 <li class="list-group-item d-flex justify-content-between align-items-center" data-goal-id="{{ goal.id }}">
                     <input type="checkbox" class="form-check-input me-1" {% if goal.achieved %}checked{% endif %} data-goal-id="{{ goal.id }}">
-                    <span contenteditable="true" class="goal_description" data-goal-id="{{ goal.id }}">{{ goal.description }}</span>
+                    <span contenteditable="true" class="goal_description {% if goal.achieved %}text-decoration-line-through{% endif %}" data-goal-id="{{ goal.id }}">{{ goal.description }}</span>
                     <button type="button" class="btn btn-sm btn-outline-danger delete-goal-btn" data-goal-id="{{ goal.id }}">Delete</button>
                 </li>
                 {% endfor %}
@@ -36,7 +36,6 @@
         </div>
     </div>
 </div>
-
 
 
     <!-- Daily Water Intake -->
@@ -79,7 +78,7 @@
 </div>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
+ddocument.addEventListener("DOMContentLoaded", function() {
     // Get CSRF token
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
@@ -147,7 +146,7 @@ document.addEventListener("DOMContentLoaded", function() {
             })
             .catch(error => console.error('Error deleting goal:', error));
         });
-        
+
         // Checkbox change functionality
         goalItem.querySelector('.form-check-input').addEventListener('change', function() {
             const goalId = this.getAttribute('data-goal-id');
@@ -204,6 +203,7 @@ document.addEventListener("DOMContentLoaded", function() {
         addEventListeners(goalItem);
     });
 });
+
 </script>
 
 {% endblock %}
