@@ -78,7 +78,7 @@
 </div>
 
 <script>
-ddocument.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function() {
     // Get CSRF token
     const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
 
@@ -86,10 +86,9 @@ ddocument.addEventListener("DOMContentLoaded", function() {
     const newGoalForm = document.getElementById('new_goal_form');
     newGoalForm.addEventListener('submit', function(event) {
         event.preventDefault();
+        const description = document.getElementById('goal_description').value.trim();
 
-        const description = document.querySelector('input[name="description"]').value;
-
-        fetch('{% url "tracker:new_goal" %}', {
+        fetch("{% url 'tracker:new_goal' %}", {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -100,34 +99,31 @@ ddocument.addEventListener("DOMContentLoaded", function() {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                // Add the new goal to the list
-                const goalList = document.getElementById('goal-list');
+                const newGoal = data.goal;
+                const goalList = document.getElementById('goal_list');
                 const newGoalItem = document.createElement('li');
-                newGoalItem.className = 'list-group-item d-flex justify-content-between align-items-center';
-                newGoalItem.setAttribute('data-goal-id', data.goal.id);
+                newGoalItem.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+                newGoalItem.setAttribute('data-goal-id', newGoal.id);
                 newGoalItem.innerHTML = `
-                    <input type="checkbox" class="form-check-input me-1" data-goal-id="${data.goal.id}">
-                    <span contenteditable="true" class="goal_description" data-goal-id="${data.goal.id}">${data.goal.description}</span>
-                    <button type="button" class="btn btn-sm btn-outline-danger delete-goal-btn" data-goal-id="${data.goal.id}">Delete</button>
+                    <input type="checkbox" class="form-check-input me-1" data-goal-id="${newGoal.id}">
+                    <span contenteditable="true" class="goal_description" data-goal-id="${newGoal.id}">${newGoal.description}</span>
+                    <button type="button" class="btn btn-sm btn-outline-danger delete-goal-btn" data-goal-id="${newGoal.id}">Delete</button>
                 `;
+
                 goalList.appendChild(newGoalItem);
+                document.getElementById('goal_description').value = ''; // Clear the input field
 
-                // Reset the form
-                document.querySelector('input[name="description"]').value = '';
-
-                // Add event listeners for the new goal
-                addEventListeners(newGoalItem);
-            } else {
-                console.error('Error adding goal:', data.message);
+                // Attach event listeners to the new elements
+                attachGoalEventListeners(newGoalItem);
             }
         })
         .catch(error => console.error('Error adding goal:', error));
     });
 
-    // Function to add event listeners to goal items
-    function addEventListeners(goalItem) {
-        // Delete goal functionality
-        goalItem.querySelector('.delete-goal-btn').addEventListener('click', function() {
+    // Function to attach event listeners to goal elements
+    function attachGoalEventListeners(goalItem) {
+        const deleteButton = goalItem.querySelector('.delete-goal-btn');
+        deleteButton.addEventListener('click', function() {
             const goalId = this.getAttribute('data-goal-id');
 
             fetch(`/tracker/delete_goal/${goalId}/`, {
@@ -147,8 +143,8 @@ ddocument.addEventListener("DOMContentLoaded", function() {
             .catch(error => console.error('Error deleting goal:', error));
         });
 
-        // Checkbox change functionality
-        goalItem.querySelector('.form-check-input').addEventListener('change', function() {
+        const checkbox = goalItem.querySelector('.form-check-input');
+        checkbox.addEventListener('change', function() {
             const goalId = this.getAttribute('data-goal-id');
             const achieved = this.checked;
 
@@ -162,21 +158,17 @@ ddocument.addEventListener("DOMContentLoaded", function() {
             })
             .then(response => response.json())
             .then(data => {
-                if (data.status === 'success') {
-                    if (achieved) {
-                        goalItem.querySelector('.goal_description').classList.add('text-decoration-line-through');
-                    } else {
-                        goalItem.querySelector('.goal_description').classList.remove('text-decoration-line-through');
-                    }
+                if (achieved) {
+                    goalItem.querySelector('.goal_description').classList.add('completed');
                 } else {
-                    console.error('Error updating goal:', data.message);
+                    goalItem.querySelector('.goal_description').classList.remove('completed');
                 }
             })
             .catch(error => console.error('Error updating goal:', error));
         });
 
-        // Edit goal functionality
-        goalItem.querySelector('.goal_description').addEventListener('blur', function() {
+        const goalDescription = goalItem.querySelector('.goal_description');
+        goalDescription.addEventListener('blur', function() {
             const goalId = this.getAttribute('data-goal-id');
             const description = this.textContent.trim();
 
@@ -190,20 +182,17 @@ ddocument.addEventListener("DOMContentLoaded", function() {
             })
             .then(response => response.json())
             .then(data => {
-                if (data.status !== 'success') {
-                    console.error('Error updating goal:', data.message);
-                }
+                console.log('Goal updated successfully:', data);
             })
             .catch(error => console.error('Error updating goal:', error));
         });
     }
 
-    // Initialize event listeners for existing goals
-    document.querySelectorAll('#goal-list li').forEach(goalItem => {
-        addEventListeners(goalItem);
+    // Attach event listeners to existing goal elements
+    document.querySelectorAll('.list-group-item').forEach(goalItem => {
+        attachGoalEventListeners(goalItem);
     });
 });
-
 </script>
 
 {% endblock %}
