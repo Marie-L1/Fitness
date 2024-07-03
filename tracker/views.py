@@ -173,7 +173,7 @@ def homepage(request):
     current_month = timezone.now().month
     current_month_name = timezone.now().strftime('%B')
 
-    # Fetching current goals (if any)
+    # Fetching current goals
     current_goals = Goal.objects.filter(user=user, achieved=False)
 
     # Fetching daily water intake
